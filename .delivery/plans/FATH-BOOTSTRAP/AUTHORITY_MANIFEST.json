@@ -101,7 +101,7 @@
       "precedence_tier": 5,
       "sha256": "b4f6f54f10ba5d648fa26b4b2edb680dceab6a108068e9ee843324c0ae4f776b",
       "scope": "SourceRegistryRecord and AccessDecision Pydantic contracts, Access Guard rules, 16 initial registry seeds, indices.",
-      "relationships": ["overridden_where_conflicting_by: FA-DOC-24 (Week-1 statuses, source status enum)", "extended_by: FA-DOC-29, FA-DOC-30"]
+      "relationships": ["overridden_where_conflicting_by: FA-DOC-24 (Week-1 statuses, source status enum)", "extended_by: FA-DOC-29, FA-DOC-30", "known_deltas_with: FA-DOC-29/FA-DOC-30 (source identifier UUID vs TEXT; seed values incomplete — recorded FA-OPEN-020/021 in traceability)"]
     },
     {
       "doc_id": "FA-DOC-04",

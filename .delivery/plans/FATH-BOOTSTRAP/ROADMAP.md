@@ -10,20 +10,21 @@
 
 - One bounded task at a time; task branch `task/TASK-XXX-<slug>`; immutable candidate SHA; independent implementation review binds to that exact SHA; merge only after gates (control-plane constitution §7–9, review policy §16–21).
 - Every task ends Confirm, Validate, Test, with recorded evidence.
+- **CI status (FATH-PR-006):** all task CI runs are SHA-bound test evidence, NOT trusted verification. **Trusted verification mechanism (explicit roadmap item, owner: Salim):** configure branch protection on `main` + externally protected CI + receipts after TASK-001's CI lands; until then, trusted-gate status is NOT_CONFIGURED everywhere.
 - AMENDMENT-001 verifier checklist applies to **every** task from TASK-001 onward: no A100 assumption; no Azure OpenAI SDK/endpoint/deployment/env; provider-agnostic LLM client only (Week 2+); RTX 5090 workstation sizing for local GPU work; budget/trust-boundary mediation of all frontier-LLM calls.
 
 ## Week 1 — Foundation slice (bounded tasks; sequenced)
 
-Scope authority: docs/18 (build scope), docs/23 (Week-1 done criteria as corrected by docs/24 §1), docs/17 (Week 1), docs/24, docs/33. Week-1 pipeline is fully deterministic — zero reasoning-model calls (doc 14 `max_llm_calls: 0`; BOOTSTRAP_PLAN §4.3).
+Scope authority: docs/18 (build scope), docs/23 (Week-1 done criteria as corrected by docs/24 §1), docs/17 (Week 1), docs/24, docs/33. **Week-1 LLM posture (PROPOSED — BOOTSTRAP_PLAN §4.4, FATH-PR-004):** zero reasoning-model calls in Week 1; Canvas v0 uses a deterministic spec producer behind a producer interface, with the doc-07 validate → retry-once → fallback pipeline fully implemented and fixture-tested; the model producer plugs in behind the Week-2 provider-agnostic LLM client. Not a necessity claim — doc 14 permits 200 daily-ingestion LLM calls and docs 07/18 define model-produced UI specs.
 
 | Task | Title | Depends on | Requirements (traceability) |
 |---|---|---|---|
-| **TASK-001** | Repository foundation: scaffold, uv env, config, Postgres 16+AGE+pgvector & Redis 7 compose, Alembic baseline, source-registry schema + 16 seeds, deterministic CI | — (first implementation task; plan approved with this bootstrap) | FA-REQ-W1-001/002/003 (schema+seeds), W1-018/019/020, CP-001/002, AM-side constraints (no Azure env) |
+| **TASK-001** | Repository foundation: doc-16-conformant scaffold, uv env, config, Postgres 16+AGE+pgvector & Redis 7 compose, Alembic baseline, source-registry **schema only** (no seed data — FA-OPEN-020), SHA-bound CI evidence | — (first implementation task; plan approved with this bootstrap) | FA-REQ-W1-001 (schema portion)/002 (schema portion), W1-018/019/020, CP-001/002, AM constraints (no Azure artifact) |
 | TASK-002 | Hash-chained append-only audit log (doc-15 formula; doc-24 §8 Pattern A in-transaction writes) | 001 | FA-REQ-W1-007 |
 | TASK-003 | Raw Archive store + MinIO object storage + session duplicate guard (doc-24 §2 insert-policy matrix) | 001, 002 | FA-REQ-W1-005/006, INV-002 |
 | TASK-004 | Redis Streams event bus + EventEnvelope + consumer groups + DLQ + idempotency_keys + durable event outbox | 001, 002 | FA-REQ-W1-008/009 |
 | TASK-005 | Trust boundary: UntrustedBlob, sanitizer, injection_patterns.yaml, delimiter escaping, quarantine ≥ 0.85, fixtures | 001 | FA-REQ-W1-010 |
-| TASK-006 | Access Guard (doc-03 rules 1–10) + registry service; every decision persisted; non-active denied | 001, 002, 004 | FA-REQ-W1-001/002/003/004 |
+| TASK-006 | Registry seed data (`config/sources_seed.yaml` + loader, 16 records) + `source_onboarding_checklists` (doc-29 DDL) + Tier-0 activation evidence + Access Guard (doc-03 rules 1–10) + registry service; every decision persisted; non-active denied. **GATED on FA-OPEN-020 (Salim-approved seed value table + Tier-0 onboarding checklists) — dispatch without it is BLOCKED_FOR_SALIM** | 001, 002, 004; FA-OPEN-020 | FA-REQ-W1-001 (seed portion)/002/003/004 |
 | TASK-007 | Qatar Open Data API connector (metadata-first, archive, hash, events, failure table) | 003, 004, 005, 006, 009 | FA-REQ-W1-011/012 |
 | TASK-008 | World Bank + GDELT connectors (same contract) | 007 (pattern established) | FA-REQ-W1-011/012 |
 | TASK-009 | Redis budget counters, reserve/refund with rollback, circuit breakers, doc-14 defaults | 001 | FA-REQ-W1-013 |
@@ -63,4 +64,4 @@ Authority: docs/17 (Week 6), 01 (success criteria), 08, 32. Requirements: FA-REQ
 
 ## Open items carried on this roadmap
 
-FA-OPEN-001 (Canvas registry, W3/W6 ADR) · FA-OPEN-002 (similarity threshold, W5 ADR) · FA-OPEN-003 (namespaces, W2 ADR) · FA-OPEN-004 (module paths + LLM-client placement, W2 ADR) · FA-OPEN-009 (frontier-LLM API credentials — Salim, before W2 LLM tasks) · FA-OPEN-010 (RTX 5090 workstation connection + sizing re-derivation — Salim/W2+W4 plans) · FA-OPEN-011 (production auth provider — Salim, production phase) · FA-OPEN-012 (Comtrade key — Tier-1 activation) · FA-OPEN-018 (mandatory provider designation — reserved to Salim) · FA-OPEN-019 (production secrets/object-store hosting — Salim, production phase). None blocks Week 1.
+FA-OPEN-001 (Canvas registry, W3/W6 human-approved ADR) · FA-OPEN-002 (similarity threshold, W5 ADR) · FA-OPEN-003 (namespaces, W2 ADR) · FA-OPEN-004 (module paths + LLM-client placement, W2 human-approved ADR per doc 23) · FA-OPEN-009 (frontier-LLM API credentials — Salim, before W2 LLM tasks) · FA-OPEN-010 (RTX 5090 workstation connection + sizing re-derivation — Salim/W2+W4 plans) · FA-OPEN-011 (production auth provider — OPEN per docs/33; Salim, production phase) · FA-OPEN-012 (Comtrade key — Tier-1 activation) · FA-OPEN-018 (mandatory provider designation — reserved to Salim) · FA-OPEN-019 (production secrets/object-store hosting — Salim, production phase) · **FA-OPEN-020 (seed value table + Tier-0 onboarding checklists — Salim; MATERIAL: gates TASK-006 and therefore TASK-007/008/014)** · FA-OPEN-021 (identifier model TEXT slug — DERIVED, reviewer confirms). None blocks TASK-001; FA-OPEN-020 gates the Week-1 activation chain.

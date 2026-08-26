@@ -13,12 +13,12 @@
   "requirements": [
     {
       "req_id": "FA-REQ-W1-001",
-      "source": "docs/03 (Pydantic model: Source Registry; Initial registry seeds; Indices)",
-      "requirement": "Source Registry schema per SourceRegistryRecord contract, with the 16 initial seeds and recommended indices.",
-      "classification": "SPECIFIED",
-      "acceptance_criterion": "Tables/models match doc-03 contract; all 16 seeds present and valid.",
+      "source": "docs/03 (Pydantic model: Source Registry; Initial registry seeds; Indices); docs/29 (TEXT identifier, onboarding before activation); docs/30 (textual ids, verifier checklist)",
+      "requirement": "Source Registry schema per SourceRegistryRecord contract (identifier model: TEXT slug PK per DERIVED resolution FA-OPEN-021) with recommended indices; the 16 initial seed records. NOTE (FATH-PR-001): authority establishes seed identities but NOT base URLs, reliability tiers, rate limits, or collection modes, and doc 29 requires human-approved onboarding checklists before activation — seed VALUES are gated on FA-OPEN-020 (Salim-approved seed value table).",
+      "classification": "SPECIFIED (schema); seed values OPEN pending FA-OPEN-020",
+      "acceptance_criterion": "Schema/model match doc-03 contract with FA-OPEN-021 identifier resolution (TASK-001); all 16 seeds present, valid, and matching the Salim-approved value table (TASK-006, post-FA-OPEN-020).",
       "oracle_class": "SPECIFIED",
-      "planned_tasks": ["TASK-001", "TASK-006"]
+      "planned_tasks": ["TASK-001 (schema only)", "TASK-006 (seeds + onboarding evidence, gated on FA-OPEN-020)"]
     },
     {
       "req_id": "FA-REQ-W1-002",
@@ -32,11 +32,11 @@
     {
       "req_id": "FA-REQ-W1-003",
       "source": "docs/24 §1; docs/23 (Additional final-build checks #2-3); docs/30 (Tier 0)",
-      "requirement": "Week-1 active sources are EXACTLY qatar_open_data, world_bank, gdelt. al_meezan, qcb, qse, invest_qatar are candidate_manual_review.",
+      "requirement": "Week-1 active sources are EXACTLY qatar_open_data, world_bank, gdelt. al_meezan, qcb, qse, invest_qatar are candidate_manual_review. Activation additionally requires completed, human-approved onboarding checklists per doc 29 (evidence produced in TASK-006 under FA-OPEN-020).",
       "classification": "SPECIFIED",
-      "acceptance_criterion": "Seed data and registry state show exactly this active set.",
+      "acceptance_criterion": "Seed data and registry state show exactly this active set, with doc-29 onboarding checklist records for each active source.",
       "oracle_class": "SPECIFIED",
-      "planned_tasks": ["TASK-001", "TASK-006", "TASK-014"]
+      "planned_tasks": ["TASK-006 (gated on FA-OPEN-020)", "TASK-014"]
     },
     {
       "req_id": "FA-REQ-W1-004",
@@ -212,11 +212,11 @@
     },
     {
       "req_id": "FA-REQ-CP-001",
-      "source": "Control plane: AUTONOMOUS_DELIVERY_CONSTITUTION.md §9/§19; REVIEW_AND_ACCEPTANCE_POLICY.md §36-39; controller instruction (CI not configured — plan it)",
-      "requirement": "Deterministic CI for the target repo as the trusted verification mechanism: lint, type check, tests, migration cycle on every candidate; runs bound to exact commit SHA. NOT a project-docs requirement — imposed by delivery governance.",
+      "source": "Control plane: AUTONOMOUS_DELIVERY_CONSTITUTION.md §9/§19; REVIEW_AND_ACCEPTANCE_POLICY.md §36-39; controller instruction (CI not configured — plan it); FATH-PR-006",
+      "requirement": "Deterministic CI producing SHA-bound TEST EVIDENCE for every candidate: lint, type check, tests, migration cycle, scoped amendment scan, secret scan. Explicitly NOT trusted verification: candidate-controlled Actions cannot be a trusted mechanism; trusted-gate status is NOT_CONFIGURED until Salim configures protected CI + branch protection + receipts (explicit roadmap item). NOT a project-docs requirement — imposed by delivery governance.",
       "classification": "DERIVED",
-      "derivation": "Constitution requires trusted verification outside the implementer's control; the repo currently has none.",
-      "acceptance_criterion": "CI workflow exists and passes on candidate SHA; branch protection recommended to Salim (repo-admin action).",
+      "derivation": "Constitution requires verification evidence; review policy §§36-39 defines what may count as trusted; the repo currently has neither, so CI is established as evidence and the trusted mechanism is carried as an open setup item owned by Salim.",
+      "acceptance_criterion": "CI workflow exists and passes on candidate SHA, recorded as SHA-bound evidence (no trusted-receipt claim); trusted-mechanism setup tracked on the roadmap (Salim, repo-admin action).",
       "oracle_class": "SPECIFIED",
       "planned_tasks": ["TASK-001"]
     },
@@ -289,7 +289,7 @@
     {
       "req_id": "FA-REQ-W5-001",
       "source": "docs/17 (Week 5); docs/11 (five chains); docs/24 §9 (EvidenceBundle); docs/12 (poisoning); docs/04 (store 5); docs/25 (build order: RBAC before Week-5 publication flows); docs/27 (Sanad gates, Week-5 gate)",
-      "requirement": "Week 5 (coarse): Sanad five-chain validator with EvidenceBundle spans and independence rule; Source-Poisoning Detector (MinHash/Jaccard clustering, citation loops, convergence-without-primary-evidence, risk scoring with quarantine cascade); Belief Calibration Store; Run Replay; Source Integrity Radar; Auth/RBAC/approvals backend-enforced (Entra OIDC in production, dev token locally).",
+      "requirement": "Week 5 (coarse): Sanad five-chain validator with EvidenceBundle spans and independence rule; Source-Poisoning Detector (MinHash/Jaccard clustering, citation loops, convergence-without-primary-evidence, risk scoring with quarantine cascade); Belief Calibration Store; Run Replay; Source Integrity Radar; Auth/RBAC/approvals backend-enforced with the doc-25 dev token locally — the production authentication provider is OPEN per AMENDMENT-001 (docs/33 Flagged OPEN; FA-OPEN-011), NOT specified as Entra OIDC.",
       "classification": "SPECIFIED",
       "acceptance_criterion": "Doc-27 Sanad gates (numerical failure detection = 1.00; no Tier-A without EvidenceBundle), poisoning synthetic-attack gates, doc-25 RBAC test fixtures.",
       "oracle_class": "REFERENCE",
@@ -311,7 +311,7 @@
       "requirement": "The LLM client is a provider-agnostic abstraction over frontier LLM APIs with configurable model routing; no provider is hard-coded as the only path; NO Azure OpenAI SDK, endpoint, deployment name, or environment variable exists anywhere in the implementation; provider/model/routing selection lives in configuration; every frontier-LLM call passes through Redis budget counters, rate limits, and circuit breakers and never receives raw untrusted content outside trust-boundary delimiters.",
       "classification": "SPECIFIED",
       "specified_by": "AMENDMENT-001",
-      "acceptance_criterion": "Amendment verifier checklist items 2, 3, 5: repo-wide scan finds no Azure OpenAI artifact; client supports >= configurable provider routing without code change; budget/trust-boundary mediation tested.",
+      "acceptance_criterion": "Amendment verifier checklist items 2, 3, 5: scoped scan of implementation/configuration artifacts (per docs/33 own scope: implementation, configuration, sizing; excludes docs/ and .delivery/ historical records) finds no Azure OpenAI artifact; client supports >= configurable provider routing without code change; budget/trust-boundary mediation tested.",
       "oracle_class": "SPECIFIED",
       "planned_tasks": ["W2 LLM-client task (to be decomposed; precedes all extractor tasks)"]
     },
@@ -371,7 +371,7 @@
       "classification": "OPEN",
       "materiality": "material at Week-2 task planning",
       "statement": "Module paths: doc 31 uses src/fath/pipeline/* and db/models file names that differ from doc 16 canonical layout (parsers/, embeddings/, extractors/ with different filenames). Doc 23 anti-drift rule requires an ADR for module paths not defined in the folder.",
-      "resolution_path": "Week-2 planner produces an ADR reconciling doc-31 deliverable paths with doc-16 layout before Week-2 implementation."
+      "resolution_path": "Week-2 planner produces an ADR-style note reconciling doc-31 deliverable paths (and LLM-client placement) with doc-16 layout, and obtains explicit human (Salim) approval per the doc-23 anti-drift rule, before Week-2 implementation."
     },
     {
       "open_id": "FA-OPEN-005",
@@ -477,6 +477,20 @@
       "materiality": "material only at the production phase; per docs/33 not required for Week-1 scope",
       "statement": "Production secrets and object-store hosting: doc-28's 'Azure Key Vault only' and 'Azure Blob' options are flagged OPEN by AMENDMENT-001 under the workstation deployment target. The documented self-hosted alternatives (MinIO, WAL archiving, .env for local development only) are the operative interim path.",
       "resolution_path": "Salim decides production hosting when the production phase makes it material; until then build against MinIO + .env-local-dev per doc 28's self-hosted paths."
+    },
+    {
+      "open_id": "FA-OPEN-020",
+      "classification": "OPEN",
+      "materiality": "MATERIAL for TASK-006 and the downstream Week-1 activation chain (TASK-007/008/014); NOT material for TASK-001 (schema only)",
+      "statement": "Registry seed record values are not established by authority (FATH-PR-001): docs 03/24/30 establish the 16 seed identities, source classes, access preferences, tiers, and Week-1 statuses, but NOT the required base_url and reliability_tier values (mandatory doc-03 fields without defaults), per-source rate limits, or collection modes. Doc 29 additionally requires a completed, human-approved onboarding checklist before any source becomes active, and doc 30's verifier requires YAML definition + checklist + rate limits for every candidate.",
+      "resolution_path": "Salim approves a minimal decision package: (a) a 16-row seed value table (id, name, class, base_url, api_base_url, reliability_tier, collection mode, rate limits, status) and (b) completed onboarding checklists for the three Tier-0 sources. TASK-006 implements seeds + checklists + activation evidence only after that approval; dispatching TASK-006 without it is BLOCKED_FOR_SALIM. No agent may invent these values."
+    },
+    {
+      "open_id": "FA-OPEN-021",
+      "classification": "OPEN",
+      "materiality": "material for TASK-001 schema design; carries a DERIVED resolution for reviewer confirmation",
+      "statement": "Source identifier model contradiction (FATH-PR-001): doc 03 defines source_id as UUID (default uuid4); doc 24 §1 uses textual ids on the sources table; doc 29's DDL declares source_onboarding_checklists.source_id TEXT PRIMARY KEY REFERENCES sources(id) (forcing a TEXT key); doc 30's template uses textual source_id.",
+      "resolution_path": "DERIVED resolution (BOOTSTRAP_PLAN §7.4): source_registry.id TEXT PRIMARY KEY (textual slug); doc-03's UUID default superseded on this one field by doc 24 precedence and docs 29/30 mandatory domain authority; all other doc-03 fields keep their contract. Plan reviewer confirms or rejects; rejection is a plan remediation."
     }
   ]
 }
