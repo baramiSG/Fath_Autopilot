@@ -14,7 +14,7 @@
     {
       "req_id": "FA-REQ-W1-001",
       "source": "docs/03 (Pydantic model: Source Registry; Initial registry seeds; Indices); docs/29 (TEXT identifier, onboarding before activation); docs/30 (textual ids, verifier checklist)",
-      "requirement": "Source Registry schema per SourceRegistryRecord contract (identifier model: TEXT slug PK per DERIVED resolution FA-OPEN-021) with recommended indices; the 16 initial seed records. NOTE (FATH-PR-001): authority establishes seed identities but NOT base URLs, reliability tiers, rate limits, or collection modes, and doc 29 requires human-approved onboarding checklists before activation — seed VALUES are gated on FA-OPEN-020 (Salim-approved seed value table).",
+      "requirement": "Source Registry schema per SourceRegistryRecord contract (identity model: dual identifier — source_id UUID PRIMARY KEY per docs 03/04/21 plus slug TEXT NOT NULL UNIQUE housing the docs 24/29/30/06 textual identifier; DERIVED reconciliation FA-OPEN-021, BOOTSTRAP_PLAN 7.4) with recommended indices; the 16 initial seed records. NOTE (FATH-PR-001): authority establishes seed identities but NOT base URLs, reliability tiers, rate limits, or collection modes, and doc 29 requires human-approved onboarding checklists before activation — seed VALUES are gated on FA-OPEN-020 (Salim-approved seed value table).",
       "classification": "SPECIFIED (schema); seed values OPEN pending FA-OPEN-020",
       "acceptance_criterion": "Schema/model match doc-03 contract with FA-OPEN-021 identifier resolution (TASK-001); all 16 seeds present, valid, and matching the Salim-approved value table (TASK-006, post-FA-OPEN-020).",
       "oracle_class": "SPECIFIED",
@@ -170,7 +170,7 @@
       "source": "docs/16 (canonical layout, boundary rules, coding + test conventions)",
       "requirement": "Repository follows the doc-16 canonical layout; modules expose typed functions and Pydantic schemas; module boundary rules respected; each module ships schema-validation, idempotency, failure-behavior, and security-boundary tests where relevant.",
       "classification": "SPECIFIED",
-      "acceptance_criterion": "Layout comparison; boundary tests.",
+      "acceptance_criterion": "Per-task expected-tree oracle with required/permitted/deferred/prohibited path sets hand-derived from doc 16 and the task plan (TASK-001_PLAN 6.1); boundary tests as modules gain code.",
       "oracle_class": "SPECIFIED",
       "planned_tasks": ["TASK-001", "all Week-1 tasks"]
     },
@@ -213,7 +213,7 @@
     {
       "req_id": "FA-REQ-CP-001",
       "source": "Control plane: AUTONOMOUS_DELIVERY_CONSTITUTION.md §9/§19; REVIEW_AND_ACCEPTANCE_POLICY.md §36-39; controller instruction (CI not configured — plan it); FATH-PR-006",
-      "requirement": "Deterministic CI producing SHA-bound TEST EVIDENCE for every candidate: lint, type check, tests, migration cycle, scoped amendment scan, secret scan. Explicitly NOT trusted verification: candidate-controlled Actions cannot be a trusted mechanism; trusted-gate status is NOT_CONFIGURED until Salim configures protected CI + branch protection + receipts (explicit roadmap item). NOT a project-docs requirement — imposed by delivery governance.",
+      "requirement": "Deterministic CI producing SHA-bound TEST EVIDENCE for every candidate: lint, type check, tests, migration cycle, scoped amendment scan, secret scan. Explicitly NOT trusted verification: candidate-controlled Actions cannot be a trusted mechanism. GATE-SETUP (BOOTSTRAP_PLAN 9) is REQUIRED BEFORE FIRST MERGE: branch protection + trusted exact-identity verification + receipts, each mechanically verified; until then trusted gates are NOT_CONFIGURED / protection NOT_VERIFIED (BUILD_STATE) and every candidate halts at REVIEW_APPROVED, not merge-eligible. NOT a project-docs requirement — imposed by delivery governance.",
       "classification": "DERIVED",
       "derivation": "Constitution requires verification evidence; review policy §§36-39 defines what may count as trusted; the repo currently has neither, so CI is established as evidence and the trusted mechanism is carried as an open setup item owned by Salim.",
       "acceptance_criterion": "CI workflow exists and passes on candidate SHA, recorded as SHA-bound evidence (no trusted-receipt claim); trusted-mechanism setup tracked on the roadmap (Salim, repo-admin action).",
@@ -233,9 +233,9 @@
     {
       "req_id": "FA-REQ-CP-003",
       "source": "Control plane: REVIEW_AND_ACCEPTANCE_POLICY.md §16-21; controller instruction",
-      "requirement": "Governed Git workflow: one task branch per bounded task, PR to main, independent review binds to exact immutable candidate SHA before merge; any post-review commit invalidates approval.",
+      "requirement": "Governed Git workflow: one task branch per bounded task, PR to main, independent review binds to exact immutable candidate SHA; any post-review commit invalidates approval. Review approval yields REVIEW_APPROVED only — merge eligibility additionally requires GATE-SETUP verified active (branch protection + trusted exact-identity verification + receipts, BOOTSTRAP_PLAN 9); until then no candidate is merge-eligible (BUILD_STATE: gates NOT_CONFIGURED, protection NOT_VERIFIED).",
       "classification": "SPECIFIED",
-      "note": "SPECIFIED by control-plane governance.",
+      "note": "SPECIFIED by control-plane governance (constitution 9/19; review policy 36-46); gate sequencing per FATH-P2-004.",
       "acceptance_criterion": "Workflow followed for every task; recorded in delivery state.",
       "oracle_class": "SPECIFIED",
       "planned_tasks": ["all tasks"]
@@ -489,8 +489,8 @@
       "open_id": "FA-OPEN-021",
       "classification": "OPEN",
       "materiality": "material for TASK-001 schema design; carries a DERIVED resolution for reviewer confirmation",
-      "statement": "Source identifier model contradiction (FATH-PR-001): doc 03 defines source_id as UUID (default uuid4); doc 24 §1 uses textual ids on the sources table; doc 29's DDL declares source_onboarding_checklists.source_id TEXT PRIMARY KEY REFERENCES sources(id) (forcing a TEXT key); doc 30's template uses textual source_id.",
-      "resolution_path": "DERIVED resolution (BOOTSTRAP_PLAN §7.4): source_registry.id TEXT PRIMARY KEY (textual slug); doc-03's UUID default superseded on this one field by doc 24 precedence and docs 29/30 mandatory domain authority; all other doc-03 fields keep their contract. Plan reviewer confirms or rejects; rejection is a plan remediation."
+      "statement": "Source identity split across contract layers (FATH-PR-001/FATH-P2-001): UUID storage contracts (doc 03 source_id: UUID; doc 04 FK raw_archive.source_id -> source_registry.source_id; doc 21 DDL source_id UUID NOT NULL REFERENCES source_registry(source_id); doc 05 UntrustedBlob.source_id: UUID) versus textual identifiers (doc 24 section 1 Week-1 sets and sections 4-5/8 payloads source_id: str with source_name; doc 29 TEXT compliance tables; doc 30 template; doc 06 event payloads source_id: str).",
+      "resolution_path": "DERIVED dual-identifier reconciliation (BOOTSTRAP_PLAN 7.4), nothing superseded: source_registry.source_id UUID PRIMARY KEY (SPECIFIED, docs 03/04/21) plus slug TEXT NOT NULL UNIQUE (textual identifier existence SPECIFIED by usage; distinct-column housing DERIVED; column name slug PROPOSED). Propagation: UUID FKs verbatim to source_registry(source_id); doc-29 TEXT columns verbatim FK to source_registry(slug) (TASK-006); event/UI payload source_id: str carries the slug; doc-30 YAML source_id key maps to slug at seed load; SourceRegistryRecord = doc-03 fields verbatim + slug + doc-24 status. Reviewer confirms; if the slug addition is found indefensible, minimal Salim question: confirm the dual-identifier model or designate which identity family supersedes."
     }
   ]
 }
