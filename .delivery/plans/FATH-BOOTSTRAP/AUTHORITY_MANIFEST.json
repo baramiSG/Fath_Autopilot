@@ -1,0 +1,450 @@
+{
+  "schema_version": "1.0",
+  "artifact_type": "AUTHORITY_MANIFEST",
+  "project_id": "FATH_AUTOPILOT",
+  "task_id": "FATH-BOOTSTRAP",
+  "generated_by_role": "CHIEF_ARCHITECT",
+  "generated_by_model": "Claude Fable 5 (1M, Thinking ON, Max effort)",
+  "baseline_commit": "ae5a4ea7db30d9ba243e29c98424702f5e0fb7a1",
+  "amendment_commit": "234a24d9e012710352d35aa5b1314a6395614945 (adds docs/33_AMENDMENT_001_COMPUTE_AND_LLM_PROVIDER.md; human-approved authority record committed before any plan artifacts)",
+  "hash_algorithm": "SHA-256",
+  "warning": "THIS MANIFEST IS A NAVIGATION AID ONLY. It is NOT project authority. The canonical documents under docs/ remain the sole project authority. If this manifest disagrees with a canonical document, the canonical document wins. Do not use this manifest to reinterpret, summarize away, or overwrite canonical content. Hashes are recorded at baseline_commit to make drift detectable; any hash mismatch means the manifest is stale and must not be trusted until regenerated.",
+  "precedence_rules": [
+    {
+      "rule_id": "PREC-0",
+      "classification": "SPECIFIED",
+      "statement": "docs/33_AMENDMENT_001_COMPUTE_AND_LLM_PROVIDER.md (AMENDMENT-001, human-approved by Salim 2026-08-26) is the TOP of project-document precedence. It overrides README.md, docs 00-32 (including doc 24), and the combined file wherever they conflict with it: no A100 GPUs; local compute target is a single NVIDIA RTX 5090 workstation; no Azure OpenAI anywhere; agent reasoning uses frontier LLM APIs via a provider-agnostic client with configurable routing; 'GPT-5.4' mentions across the corpus (docs 04, 05, 07, 08, 09, 10, 11, 16, 17, 24, 26) are read as 'the configured frontier reasoning model, accessed via API' (vision fallback stays fallback-only); doc-25 Entra OIDC and doc-28 Azure Blob/Key Vault are NOT voided but flagged OPEN for the production phase with the documented self-hosted paths operative interim. Doc 24 remains the correction layer for everything the amendment does not address.",
+      "source": "docs/33_AMENDMENT_001_COMPUTE_AND_LLM_PROVIDER.md (Precedence, Corrections 1-4, Interpretation rules, Override map)"
+    },
+    {
+      "rule_id": "PREC-1",
+      "classification": "SPECIFIED",
+      "statement": "Subject to PREC-0, docs/24_FINAL_IMPLEMENTATION_CORRECTIONS.md OVERRIDES docs 00-23 wherever they conflict, until the earlier document is patched.",
+      "source": "docs/24_FINAL_IMPLEMENTATION_CORRECTIONS.md (Purpose); docs/00_MASTER_BUILD_CONTEXT.md (v3 implementation context); docs/README.md (v3 final reading rule); precedence over doc 24 per docs/33 (Precedence)"
+    },
+    {
+      "rule_id": "PREC-2",
+      "classification": "SPECIFIED",
+      "statement": "For any build touching authentication, approvals, simulation, evaluation, operations, source onboarding, or production readiness, docs 25-32 are mandatory additional authority for their domains.",
+      "source": "docs/00_MASTER_BUILD_CONTEXT.md (v3 implementation context); docs/README.md (v3 final reading rule); docs/23_IMPLEMENTATION_COVERAGE_CHECKLIST.md (Final v3 coverage additions)"
+    },
+    {
+      "rule_id": "PREC-3",
+      "classification": "DERIVED",
+      "statement": "Among non-conflicting canonical documents, the document that is specific to a domain governs that domain (e.g. doc 06 governs events, doc 15 governs audit). Appendices 21 and 22 refine docs 10/04/16 at implementation depth. Derivation: standard specific-over-general reading; no canonical document states the contrary.",
+      "source": "Derived from corpus structure; docs/README.md documentation map"
+    },
+    {
+      "rule_id": "PREC-4",
+      "classification": "SPECIFIED",
+      "statement": "docs/Fath_Autopilot_Technical_Docs_Final_Combined.md is a convenience concatenation and is REFERENCE-ONLY. The individual numbered files are canonical. The combined file predates the final save of the numbered files and may lag them.",
+      "source": "Combined file header ('This combined file concatenates all Markdown files...'); controller instruction; file modification evidence at baseline"
+    },
+    {
+      "rule_id": "PREC-5",
+      "classification": "SPECIFIED",
+      "statement": "Architecture decisions in doc 02 are locked; they may be superseded only by a written ADR at docs/adr/ADR-YYYYMMDD-title.md stating old decision, new decision, reason, affected modules, and migration steps.",
+      "source": "docs/02_ARCHITECTURE_DECISIONS.md (Supersession rule)"
+    }
+  ],
+  "documents": [
+    {
+      "doc_id": "FA-DOC-33",
+      "path": "docs/33_AMENDMENT_001_COMPUTE_AND_LLM_PROVIDER.md",
+      "title": "AMENDMENT-001: Compute Platform and LLM Provider Correction",
+      "version": "AMENDMENT-001",
+      "status": "HUMAN_APPROVED_AMENDMENT",
+      "precedence_tier": 1,
+      "sha256": "3ea00519a4e7b79adb2e1f60afcfd4c393906033c148fd254fb1d71e15c61589",
+      "scope": "Human-approved authority record (Salim, 2026-08-26). Voids all A100 references (no 8xA100 VM); sets local compute target to a single RTX 5090 workstation; voids all Azure OpenAI references; mandates provider-agnostic frontier-LLM API client with configurable routing; reverses doc-02 'no extra frontier LLMs'; interpretation rules for 'GPT-5.4' mentions; flags doc-25 Entra OIDC and doc-28 Azure Blob/Key Vault OPEN for production phase; 5-item verifier checklist.",
+      "relationships": ["overrides_where_conflicting: FA-DOC-README, FA-DOC-00..FA-DOC-32, FA-DOC-COMBINED", "leaves_as_correction_layer: FA-DOC-24 (for everything not addressed by the amendment)", "flags_open: FA-DOC-25 (production auth provider), FA-DOC-28 (production secrets/object-store hosting)"]
+    },
+    {
+      "doc_id": "FA-DOC-00",
+      "path": "docs/00_MASTER_BUILD_CONTEXT.md",
+      "title": "Master Build Context",
+      "version": "v3",
+      "status": "CANONICAL",
+      "precedence_tier": 3,
+      "sha256": "f9d97b4915541da443eca516e8de4f9ae8f7ac6af28079b3ee72e5fa310f174f",
+      "scope": "Entry document. Product definition, first proof target (Qatar), heartbeat behavior, non-negotiable action restrictions, locked technology decisions, five memory stores, trust boundary, first milestone. AMENDMENT-001 replaces its locked reasoning-model decision with frontier LLM APIs via provider-agnostic client.",
+      "relationships": ["overridden_where_conflicting_by: FA-DOC-33, FA-DOC-24", "directs_reading_of: FA-DOC-24, FA-DOC-25..FA-DOC-32"]
+    },
+    {
+      "doc_id": "FA-DOC-01",
+      "path": "docs/01_PRODUCT_AND_SCOPE.md",
+      "title": "Product and Scope",
+      "version": "v3",
+      "status": "CANONICAL",
+      "precedence_tier": 5,
+      "sha256": "6771bfe78d176d61e7d25f961672ac9ad258917d669470a46685c9e19c73a328",
+      "scope": "Product thesis, first proof question, exclusions, six-week success criteria (10 items).",
+      "relationships": ["overridden_where_conflicting_by: FA-DOC-24"]
+    },
+    {
+      "doc_id": "FA-DOC-02",
+      "path": "docs/02_ARCHITECTURE_DECISIONS.md",
+      "title": "Architecture Decisions",
+      "version": "v3",
+      "status": "CANONICAL_LOCKED",
+      "precedence_tier": 4,
+      "sha256": "2fce6b58a1121f81dc44f436165dc1392ca37e44e3fe2192c159545fea33b726",
+      "scope": "Locked stack decisions, architecture diagram, database decision, implementation order, ADR supersession rule. AMENDMENT-001 replaces the reasoning-model row and voids 'Local A100-supported processing; no extra frontier LLMs' (local processing now on the RTX 5090 workstation; frontier LLM APIs permitted for agent reasoning).",
+      "relationships": ["overridden_where_conflicting_by: FA-DOC-33, FA-DOC-24", "supersedable_only_by: docs/adr/ADR-* (subject to FA-DOC-33)"]
+    },
+    {
+      "doc_id": "FA-DOC-03",
+      "path": "docs/03_SOURCE_REGISTRY_AND_ACCESS_POLICY.md",
+      "title": "Source Registry and Access Policy",
+      "version": "v3",
+      "status": "CANONICAL",
+      "precedence_tier": 5,
+      "sha256": "b4f6f54f10ba5d648fa26b4b2edb680dceab6a108068e9ee843324c0ae4f776b",
+      "scope": "SourceRegistryRecord and AccessDecision Pydantic contracts, Access Guard rules, 16 initial registry seeds, indices.",
+      "relationships": ["overridden_where_conflicting_by: FA-DOC-24 (Week-1 statuses, source status enum)", "extended_by: FA-DOC-29, FA-DOC-30"]
+    },
+    {
+      "doc_id": "FA-DOC-04",
+      "path": "docs/04_MEMORY_STORE_SCHEMAS.md",
+      "title": "Memory Store Schemas",
+      "version": "v3",
+      "status": "CANONICAL",
+      "precedence_tier": 5,
+      "sha256": "2b35732a6525764682a8031cf24ee3a707123b8e06a8ea3e1099d2509dc23ac0",
+      "scope": "Pydantic contracts for the five memory stores, shared enums, indices, supersession and store-separation rules.",
+      "relationships": ["overridden_where_conflicting_by: FA-DOC-24 (fact status enum; raw-archive uniqueness replaced by session duplicate guard)", "refined_by: FA-DOC-22"]
+    },
+    {
+      "doc_id": "FA-DOC-05",
+      "path": "docs/05_TRUST_BOUNDARY_AND_SANITIZATION.md",
+      "title": "Trust Boundary and Sanitization",
+      "version": "v3",
+      "status": "CANONICAL",
+      "precedence_tier": 5,
+      "sha256": "2747d0ae4d8e1d4d0526e69ea5687a5dae01f72a06904d035df6f766f8f7fba0",
+      "scope": "UntrustedBlob contract, prompt assembly convention, injection pattern registry, sanitizer behavior, quarantine rule, model-call logging, test fixtures.",
+      "relationships": ["overridden_where_conflicting_by: FA-DOC-24 (immutability semantics, delimiter escaping)"]
+    },
+    {
+      "doc_id": "FA-DOC-06",
+      "path": "docs/06_EVENT_BUS_CONTRACT.md",
+      "title": "Event Bus Contract",
+      "version": "v3",
+      "status": "CANONICAL",
+      "precedence_tier": 5,
+      "sha256": "13ad1b5b4dc15cd94f070da7ad069103de2867b79262fcc8f981bcb5807a6c79",
+      "scope": "Redis Streams decision, delivery semantics, stream names, EventEnvelope, event type catalog, payload schemas, idempotency, DLQ, audit integration, tests.",
+      "relationships": ["overridden_where_conflicting_by: FA-DOC-24 (RawArchiveAddedPayload fields)"]
+    },
+    {
+      "doc_id": "FA-DOC-07",
+      "path": "docs/07_FATH_CANVAS_GENERATIVE_UI.md",
+      "title": "Fath Canvas Generative UI Contracts",
+      "version": "v3",
+      "status": "CANONICAL",
+      "precedence_tier": 5,
+      "sha256": "5e9448bbdaf6387fe1db5c48f753a984295a2023706d1348bc05c9af149a585e",
+      "scope": "Controlled generative UI rules, first-screen rule, ComponentType registry, component prop models, TypeScript interfaces, orchestrator rules, v0 layout, rejection behavior.",
+      "relationships": ["overridden_where_conflicting_by: FA-DOC-24 (ComponentName registry; RawArchiveRecordCard first-class)"]
+    },
+    {
+      "doc_id": "FA-DOC-08",
+      "path": "docs/08_AGENT_ROLE_SPECIFICATIONS.md",
+      "title": "Agent Role Specifications",
+      "version": "v3",
+      "status": "CANONICAL",
+      "precedence_tier": 5,
+      "sha256": "95ce1ce9f9e41bd2e7544777b068c6343afedb2a4c6f1cbd8cf1accd0c57684c",
+      "scope": "Agent role groups, input/output envelopes, agent boundary rules, Coverage Auditor prominence.",
+      "relationships": ["overridden_where_conflicting_by: FA-DOC-24"]
+    },
+    {
+      "doc_id": "FA-DOC-09",
+      "path": "docs/09_CRAWLER_AND_INGESTION_SPEC.md",
+      "title": "Crawler and Ingestion Specification",
+      "version": "v3",
+      "status": "CANONICAL",
+      "precedence_tier": 5,
+      "sha256": "01e50b46f330c2c20f08b6e64c0be4381362cf293c2e2b90a11a0ef1f42f1d3e",
+      "scope": "Crawler order of preference, crawler interfaces, API/Legal/Report/News/Benchmark crawler rules, idempotency, failure behavior, minimum tests.",
+      "relationships": ["overridden_where_conflicting_by: FA-DOC-24 (raw-archive idempotency detail)"]
+    },
+    {
+      "doc_id": "FA-DOC-10",
+      "path": "docs/10_EMBEDDING_RETRIEVAL_AND_CONNECTIONS.md",
+      "title": "Embedding, Retrieval, and Connection Agent",
+      "version": "v3",
+      "status": "CANONICAL",
+      "precedence_tier": 5,
+      "sha256": "e7c2fd23121cec1d8228d0182f3b0ca5150b26cf4e51a6f6f942dac5395f1271",
+      "scope": "BGE-M3 decision, chunking, embedding records, retrieval defaults, Connection Agent hybrid algorithm, scoring, thresholds.",
+      "relationships": ["refined_by: FA-DOC-21 (known threshold/namespace deltas recorded as OPEN in traceability)", "overridden_where_conflicting_by: FA-DOC-24"]
+    },
+    {
+      "doc_id": "FA-DOC-11",
+      "path": "docs/11_SANAD_VALIDATION_SPEC.md",
+      "title": "Sanad Validation Specification",
+      "version": "v3",
+      "status": "CANONICAL",
+      "precedence_tier": 5,
+      "sha256": "ee4213ae1f7f50f3d6057b151d082fb635e56945b1998f1d80612e1217745bae",
+      "scope": "Five validation chains, algorithms, thresholds, verdict aggregation, promotion rule.",
+      "relationships": ["overridden_where_conflicting_by: FA-DOC-24 (EvidenceBundle requirement)"]
+    },
+    {
+      "doc_id": "FA-DOC-12",
+      "path": "docs/12_SOURCE_POISONING_AND_NARRATIVE_DEFENSE.md",
+      "title": "Source Poisoning and Narrative Defense",
+      "version": "v3",
+      "status": "CANONICAL",
+      "precedence_tier": 5,
+      "sha256": "8a919cfaa733047ab2eb8a3a9e8918a58723dae050c847b74f3237fb003f9562",
+      "scope": "Threat classes, claim clustering, MinHash/Jaccard, citation loop detection, convergence detection, risk scoring, quarantine thresholds, Sanad impact.",
+      "relationships": ["overridden_where_conflicting_by: FA-DOC-24"]
+    },
+    {
+      "doc_id": "FA-DOC-13",
+      "path": "docs/13_WORKFLOWS_HEARTBEATS_AND_STATE.md",
+      "title": "Workflows, Heartbeats, and State",
+      "version": "v3",
+      "status": "CANONICAL",
+      "precedence_tier": 5,
+      "sha256": "75febc9fadba1d05c64cc64d084f08ed2dcafc7ee419437f588446a72bf5c57e",
+      "scope": "Heartbeat schedules, WorkflowStateRecord, LangGraph node pattern, idempotency keys, workflow graphs, failure/resume semantics, approval pause.",
+      "relationships": ["overridden_where_conflicting_by: FA-DOC-24"]
+    },
+    {
+      "doc_id": "FA-DOC-14",
+      "path": "docs/14_BUDGET_RATE_LIMIT_AND_CIRCUIT_BREAKERS.md",
+      "title": "Budget, Rate Limits, and Circuit Breakers",
+      "version": "v3",
+      "status": "CANONICAL",
+      "precedence_tier": 5,
+      "sha256": "f53b56c26cf68b4b0849ffe4457608d4b31d7eaeceef7d94493dee91917dccfc",
+      "scope": "Budget scopes, Redis key format, atomic decrement, circuit breakers, initial budget defaults, token counting, graceful degradation. AMENDMENT-001 interpretation rule 4: the Azure-billing note is read as 'API usage must be tracked for operational control regardless of billing arrangement'.",
+      "relationships": ["overridden_where_conflicting_by: FA-DOC-24 (reservation/refund requirement)", "reinterpreted_by: FA-DOC-33 (rule 4)"]
+    },
+    {
+      "doc_id": "FA-DOC-15",
+      "path": "docs/15_AUDIT_LOG_AND_PROVENANCE.md",
+      "title": "Audit Log and Provenance",
+      "version": "v3",
+      "status": "CANONICAL",
+      "precedence_tier": 5,
+      "sha256": "6664fa1f4b87a37103a38152c8b4e01f73bc23a3ddc71424a287b15da893f755",
+      "scope": "Hash-chained append-only audit log schema, row hash calculation, append-only enforcement, provenance rules, run replay.",
+      "relationships": ["overridden_where_conflicting_by: FA-DOC-24 (audit write pattern: in-transaction service writes or outbox; no async listeners)"]
+    },
+    {
+      "doc_id": "FA-DOC-16",
+      "path": "docs/16_PROJECT_STRUCTURE_AND_MODULE_BOUNDARIES.md",
+      "title": "Project Structure and Module Boundaries",
+      "version": "v3",
+      "status": "CANONICAL",
+      "precedence_tier": 5,
+      "sha256": "884123177d48c8c8d72105de0315a9fc0127cfc6552bcf32eff21da372fe88b5",
+      "scope": "Canonical repository layout, module boundary rules, coding convention, test convention.",
+      "relationships": ["overridden_where_conflicting_by: FA-DOC-24", "module_path_deltas_with: FA-DOC-31 (recorded OPEN in traceability)"]
+    },
+    {
+      "doc_id": "FA-DOC-17",
+      "path": "docs/17_BUILD_PLAN_AND_VERIFICATION.md",
+      "title": "Build Plan and Verification",
+      "version": "v3",
+      "status": "CANONICAL",
+      "precedence_tier": 5,
+      "sha256": "e00103392a2f4e860f1b54c3119e08797fecf334374ccbead779879e32c476dc",
+      "scope": "Six-week build plan, per-week build/verification lists, verification checklist, demo exit criterion.",
+      "relationships": ["overridden_where_conflicting_by: FA-DOC-24 (Week-1 source set)", "operationalized_by: FA-DOC-18 (Week 1), FA-DOC-31 (Week 2)"]
+    },
+    {
+      "doc_id": "FA-DOC-18",
+      "path": "docs/18_WEEK1_AI_CODER_KICKOFF.md",
+      "title": "Week 1 AI-Coder Kickoff",
+      "version": "v3",
+      "status": "CANONICAL",
+      "precedence_tier": 5,
+      "sha256": "c095cb33bd450874075d949fb118f20f23dc43668aba9b1bc575f96b372203a9",
+      "scope": "Week-1 build scope (11 items), reasoning requirements, v0 approved components, approval test. AMENDMENT-001 voids its locked-list line 'Reasoning model: Azure OpenAI GPT-5.4 only'.",
+      "relationships": ["overridden_where_conflicting_by: FA-DOC-33 (reasoning-model line), FA-DOC-24 (Al Meezan inactive; Week-1 active sources)"]
+    },
+    {
+      "doc_id": "FA-DOC-19",
+      "path": "docs/19_RISK_REGISTER.md",
+      "title": "Risk Register",
+      "version": "v3",
+      "status": "CANONICAL",
+      "precedence_tier": 5,
+      "sha256": "18f81b994ba65c4e927d804707abda76320735635c24cd8ae521d4e325433155",
+      "scope": "Security, data, product, operational, governance risks and mitigations.",
+      "relationships": []
+    },
+    {
+      "doc_id": "FA-DOC-20",
+      "path": "docs/20_TERMINOLOGY.md",
+      "title": "Terminology",
+      "version": "v3",
+      "status": "CANONICAL",
+      "precedence_tier": 5,
+      "sha256": "56874807b8dec77872c911985c6c71cf41be2f4ce66e41ca7b0c96ae6ce03cce",
+      "scope": "Controlled vocabulary: Fath Canvas, policy genome, five stores, Sanad, Al-Muhasibi discipline, UntrustedBlob, Access Guard, Run Replay.",
+      "relationships": []
+    },
+    {
+      "doc_id": "FA-DOC-21",
+      "path": "docs/21_DETAILED_EMBEDDING_PIPELINE_APPENDIX.md",
+      "title": "Detailed Embedding Pipeline Appendix (internal header: '16 - Embedding and Retrieval Pipeline')",
+      "version": "v3",
+      "status": "CANONICAL_APPENDIX",
+      "precedence_tier": 5,
+      "sha256": "1345fcc60fd68c636bd6a5ed4c09175a944102191c543a2689dde78cf80eadd4",
+      "scope": "DocumentChunk/EmbeddingRecord contracts, pgvector DDL with HNSW, namespaces, retrieval defaults, re-embedding, reranking policy. NOTE: internal header numbering (16) differs from filename (21); filename ordering is canonical for identity.",
+      "relationships": ["refines: FA-DOC-10", "known_deltas_with: FA-DOC-10 (min_similarity and namespace lists; recorded OPEN in traceability)", "overridden_where_conflicting_by: FA-DOC-33 ('local reranker on the A100s' -> local reranker on the workstation GPU)"]
+    },
+    {
+      "doc_id": "FA-DOC-22",
+      "path": "docs/22_DATABASE_SCHEMA_AND_INDICES_APPENDIX.md",
+      "title": "Database Schema and Indices Appendix (internal header: '17 - Database Schema, Indices, and Extensions')",
+      "version": "v3",
+      "status": "CANONICAL_APPENDIX",
+      "precedence_tier": 5,
+      "sha256": "a612d89a5915a9f9047cecc2a815f12de4e7ae4b17c74692a9c207df1966fb96",
+      "scope": "Required Postgres extensions, main table list, relational graph tables (canonical) mirrored by Apache AGE, AGE labels/edges, join-table and partitioning guidance, data integrity rules. NOTE: internal header numbering (17) differs from filename (22).",
+      "relationships": ["refines: FA-DOC-04, FA-DOC-16", "overridden_where_conflicting_by: FA-DOC-24 (graph edge additions)"]
+    },
+    {
+      "doc_id": "FA-DOC-23",
+      "path": "docs/23_IMPLEMENTATION_COVERAGE_CHECKLIST.md",
+      "title": "Implementation Coverage Checklist",
+      "version": "v3",
+      "status": "CANONICAL",
+      "precedence_tier": 5,
+      "sha256": "2fccb3171158573597f62bba01271687bda5a46625a411997217afca5fcb440c",
+      "scope": "Coverage map, implementation readiness gates (10), Week-1 done criteria (12), anti-drift rule, final v3 coverage additions, additional final-build checks (10).",
+      "relationships": ["overridden_where_conflicting_by: FA-DOC-24"]
+    },
+    {
+      "doc_id": "FA-DOC-24",
+      "path": "docs/24_FINAL_IMPLEMENTATION_CORRECTIONS.md",
+      "title": "Final Implementation Corrections and Non-Negotiable Invariants",
+      "version": "v3",
+      "status": "CANONICAL_OVERRIDE_LAYER_SUBORDINATE_TO_AMENDMENT_001",
+      "precedence_tier": 2,
+      "sha256": "d4ca43c6a63d69e2bf09508548515725bac471c45f5869d4e4fda1e8649220c6",
+      "scope": "Overrides docs 00-23 where conflicting: Week-1 source set, source status enum, raw-archive session duplicate guard, FactStatus with quarantined from first fact migration, Canvas registry incl. RawArchiveRecordCard, RawArchiveAddedPayload fields, ARTICLE_PART_OF_LAW and FDI_TARGETS_COUNTRY edges, UntrustedBlob immutability + delimiter escaping, audit write pattern, Sanad EvidenceBundle, template-only simulation, budget reserve/refund, backend-RBAC approvals. Verifier checklist (10).",
+      "relationships": ["overrides: FA-DOC-00..FA-DOC-23 (subject to FA-DOC-33)", "overridden_where_conflicting_by: FA-DOC-33 (GPT-5.4 references reinterpreted per its rule 1)", "defers_to: FA-DOC-25 (full RBAC implementation)"]
+    },
+    {
+      "doc_id": "FA-DOC-25",
+      "path": "docs/25_AUTH_RBAC_AND_APPROVALS.md",
+      "title": "Authentication, RBAC, and Human Approval",
+      "version": "v3",
+      "status": "CANONICAL",
+      "precedence_tier": 4,
+      "sha256": "05dfb99a5dbf1723e14af0154412cd454293413d595bad91081b7387d411fd58",
+      "scope": "Entra ID OIDC, role model, permission matrix, user model, FastAPI authz dependency, approval state machine, policies, SSE filtering, test fixtures, build-order note (required before Week-5 publication/quarantine flows). AMENDMENT-001 flags Entra ID / Azure AD OIDC OPEN for the production phase; local dev auth (signed developer token) unaffected.",
+      "relationships": ["mandatory_for_domain: authentication/approvals", "flagged_open_by: FA-DOC-33 (production auth provider)"]
+    },
+    {
+      "doc_id": "FA-DOC-26",
+      "path": "docs/26_SIMULATION_SANDBOX_AND_POLICY_TOURNAMENT.md",
+      "title": "Simulation Sandbox and Policy Tournament",
+      "version": "v3",
+      "status": "CANONICAL",
+      "precedence_tier": 4,
+      "sha256": "a4f6ac3fb30bd9f9d3570c2f0dfaa4f13f017c68e3d0e4b8056f1018d7c341d2",
+      "scope": "Template-based simulation, four first-build templates, Latin Hypercube sampling, ranking formula, dominance rule, sandbox container requirements, reproducibility, LLM-code certification gate, test fixtures.",
+      "relationships": ["mandatory_for_domain: simulation"]
+    },
+    {
+      "doc_id": "FA-DOC-27",
+      "path": "docs/27_EVALUATION_AND_QUALITY_GATES.md",
+      "title": "Evaluation, Golden Sets, and Quality Gates",
+      "version": "v3",
+      "status": "CANONICAL",
+      "precedence_tier": 4,
+      "sha256": "891a64d0f38d154a3bea292f89c3e6faccfa0278e944c20986969508f0d954b1",
+      "scope": "Golden dataset structure, make eval, extraction/retrieval/graph/connection/Sanad/Canvas/poisoning/security gates, weekly regression workflow, EvalReport schema, Week 1-6 phase gates.",
+      "relationships": ["mandatory_for_domain: evaluation"]
+    },
+    {
+      "doc_id": "FA-DOC-28",
+      "path": "docs/28_OPERATIONS_BACKUP_RESTORE_AND_DR.md",
+      "title": "Operations, Backup, Restore, and Disaster Recovery",
+      "version": "v3",
+      "status": "CANONICAL",
+      "precedence_tier": 4,
+      "sha256": "b6dd8c5bd7016d3ff10f91de877265a70dfc0fd0ce6496f5f539802f81c8fcd2",
+      "scope": "Production services (incl. Postgres 16 + AGE + pgvector, Redis 7, MinIO/Azure Blob), backups, restore drills, RPO/RTO, Alembic migration policy and test pattern, observability, health checks, incidents, secrets management, runbooks. AMENDMENT-001 flags Azure Blob / Azure Key Vault / Azure-native backup OPEN for the production phase; documented self-hosted paths (MinIO, WAL archiving, .env local dev only) are the operative interim on the workstation target.",
+      "relationships": ["mandatory_for_domain: operations", "flagged_open_by: FA-DOC-33 (production secrets/object-store hosting)"]
+    },
+    {
+      "doc_id": "FA-DOC-29",
+      "path": "docs/29_SOURCE_LICENSING_COMPLIANCE_AND_ONBOARDING.md",
+      "title": "Source Licensing, Compliance, and Onboarding",
+      "version": "v3",
+      "status": "CANONICAL",
+      "precedence_tier": 4,
+      "sha256": "74731553d6d56b106e33e899203d658e77f68bc06a9ea422b850ad4aa1832313",
+      "scope": "Phase-1 data rules, source onboarding lifecycle and checklist, collection modes, PII avoidance, legal corpus handling, paid subscription policy, source risk scoring, terms-change monitoring.",
+      "relationships": ["mandatory_for_domain: source onboarding", "extends: FA-DOC-03"]
+    },
+    {
+      "doc_id": "FA-DOC-30",
+      "path": "docs/30_SEED_SOURCE_CATALOG_AND_PRIORITY_MAP.md",
+      "title": "Seed Source Catalog and Priority Map",
+      "version": "v3",
+      "status": "CANONICAL",
+      "precedence_tier": 4,
+      "sha256": "1768ee8b4c526df1d9d786c6fc3c3f30ecf3d32d3aa2798467f9d6f909992e9a",
+      "scope": "Priority tiers (Tier 0 = Week-1 active: qatar_open_data, world_bank, gdelt), Tier 1-3 backlog, candidate source YAML template, source-to-use-case map, portability pattern, activation order, source scoring.",
+      "relationships": ["mandatory_for_domain: source onboarding", "extends: FA-DOC-03"]
+    },
+    {
+      "doc_id": "FA-DOC-31",
+      "path": "docs/31_WEEK2_KICKOFF_EXTRACTORS_AND_GRAPH.md",
+      "title": "Week 2 Kickoff: Extractors and Knowledge Graph",
+      "version": "v3",
+      "status": "CANONICAL",
+      "precedence_tier": 4,
+      "sha256": "1ace4a74d00bcff0441cd7419400664b36db2b95c82c838d8a09715cb3e02cdd",
+      "scope": "Week-2 scope/out-of-scope, 7 deliverable steps with files and acceptance, smoke test, Reasoner kickoff prompt, success criteria. NOTE: its illustrative file paths (src/fath/pipeline/...) and migration numbering (0003-0006) differ from doc 16 layout and Week-1 realities; recorded OPEN in traceability for Week-2 planning.",
+      "relationships": ["operationalizes: FA-DOC-17 (Week 2)", "module_path_deltas_with: FA-DOC-16"]
+    },
+    {
+      "doc_id": "FA-DOC-32",
+      "path": "docs/32_PRODUCTION_READINESS_CHECKLIST.md",
+      "title": "Production Readiness Checklist",
+      "version": "v3",
+      "status": "CANONICAL",
+      "precedence_tier": 4,
+      "sha256": "68b7df87bf9e01fa76fbae527c257d4cb8c3e093cbdba43d6f8075851851cb04",
+      "scope": "Continuous-operation readiness across 8 areas, demo readiness statement, kill criteria, operator sign-off form.",
+      "relationships": ["mandatory_for_domain: production readiness"]
+    },
+    {
+      "doc_id": "FA-DOC-README",
+      "path": "docs/README.md",
+      "title": "Fath Autopilot Documentation Folder",
+      "version": "v3",
+      "status": "CANONICAL",
+      "precedence_tier": 3,
+      "sha256": "7ff2db4e65e3fbdff61f43f337ae82ca8ee2de53d663fc704b615e6ad51e2dbd",
+      "scope": "Documentation map, operating principle, first implementation slice (10 items), build constraints, v3 final reading rule. AMENDMENT-001 voids its 'Azure OpenAI GPT-5.4 only' and '8xA100 VM' statements.",
+      "relationships": ["overridden_where_conflicting_by: FA-DOC-33", "directs_reading_of: FA-DOC-24, FA-DOC-25..FA-DOC-32"]
+    },
+    {
+      "doc_id": "FA-DOC-COMBINED",
+      "path": "docs/Fath_Autopilot_Technical_Docs_Final_Combined.md",
+      "title": "Final Technical Documentation Package (concatenation)",
+      "version": "v3 (pre-final save)",
+      "status": "REFERENCE_ONLY",
+      "precedence_tier": 9,
+      "sha256": "9b16a895deacce7646e1a661d69fc696a8e754d271b79a5af3f90a4744927d90",
+      "scope": "Convenience concatenation of the corpus. NOT canonical. The individual numbered files are authoritative; this copy may lag them.",
+      "relationships": ["copy_of: FA-DOC-00..FA-DOC-32, FA-DOC-README", "overridden_where_conflicting_by: FA-DOC-33 (all copies of amended statements equally overridden)"]
+    }
+  ],
+  "doc_id_note": "FA-DOC-* identifiers are DERIVED internal navigation identifiers created by the planner. They do not exist in the canonical documents.",
+  "drift_detection": "Verify with: cd docs && sha256sum -c against this manifest's hashes. Any mismatch: stop, re-read the changed canonical document, regenerate the manifest through the governed planning role."
+}

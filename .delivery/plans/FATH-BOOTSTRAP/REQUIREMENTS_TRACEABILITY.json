@@ -1,0 +1,482 @@
+{
+  "schema_version": "1.0",
+  "artifact_type": "REQUIREMENTS_TRACEABILITY",
+  "project_id": "FATH_AUTOPILOT",
+  "task_id": "FATH-BOOTSTRAP",
+  "generated_by_role": "CHIEF_ARCHITECT",
+  "baseline_commit": "ae5a4ea7db30d9ba243e29c98424702f5e0fb7a1",
+  "amendment_commit": "234a24d9e012710352d35aa5b1314a6395614945",
+  "amendment_note": "AMENDMENT-001 (docs/33, HUMAN_APPROVED_AMENDMENT, sha256 3ea00519a4e7b79adb2e1f60afcfd4c393906033c148fd254fb1d71e15c61589) is the TOP of project-document precedence. All 'GPT-5.4' wording cited from earlier documents in this register is read as 'the configured frontier reasoning model, accessed via API' per its interpretation rules 1-2; all A100 compute assumptions are void; local GPU compute target is a single RTX 5090 workstation; no Azure OpenAI SDK/endpoint/env may exist in the implementation.",
+  "warning": "NAVIGATION AID ONLY — NOT PROJECT AUTHORITY. Canonical docs/ documents remain authoritative. All FA-REQ-* and FA-OPEN-* identifiers are DERIVED internal identifiers created by the planner; the canonical documents do not define requirement IDs. Requirement statements here are traceability pointers, not replacements for the cited sections.",
+  "id_convention": "FA-REQ-W<week>-<nnn> for week-scoped requirements, FA-REQ-CP-<nnn> for control-plane-imposed requirements, FA-REQ-<domain>-<nnn> for cross-cutting; FA-OPEN-<nnn> for open items/contradictions. Oracle classes per control-plane ORACLE_POLICY.md: SPECIFIED | REFERENCE | JUDGMENT.",
+  "granularity_note": "Week-1 requirements are traced at implementation depth. Weeks 2-6 are traced at coarser granularity and MUST be re-decomposed by the planner at each week's task-planning time.",
+  "requirements": [
+    {
+      "req_id": "FA-REQ-W1-001",
+      "source": "docs/03 (Pydantic model: Source Registry; Initial registry seeds; Indices)",
+      "requirement": "Source Registry schema per SourceRegistryRecord contract, with the 16 initial seeds and recommended indices.",
+      "classification": "SPECIFIED",
+      "acceptance_criterion": "Tables/models match doc-03 contract; all 16 seeds present and valid.",
+      "oracle_class": "SPECIFIED",
+      "planned_tasks": ["TASK-001", "TASK-006"]
+    },
+    {
+      "req_id": "FA-REQ-W1-002",
+      "source": "docs/24 §1 (Source status enum; Access Guard rule)",
+      "requirement": "Source status enum (candidate, candidate_manual_review, approved_inactive, active, suspended, quarantined, retired) with DB CHECK; Access Guard denies any non-active source.",
+      "classification": "SPECIFIED",
+      "acceptance_criterion": "Status column + CHECK exists from first migration; guard returns deny with manual_review_required/source_not_active reasons.",
+      "oracle_class": "SPECIFIED",
+      "planned_tasks": ["TASK-001", "TASK-006"]
+    },
+    {
+      "req_id": "FA-REQ-W1-003",
+      "source": "docs/24 §1; docs/23 (Additional final-build checks #2-3); docs/30 (Tier 0)",
+      "requirement": "Week-1 active sources are EXACTLY qatar_open_data, world_bank, gdelt. al_meezan, qcb, qse, invest_qatar are candidate_manual_review.",
+      "classification": "SPECIFIED",
+      "acceptance_criterion": "Seed data and registry state show exactly this active set.",
+      "oracle_class": "SPECIFIED",
+      "planned_tasks": ["TASK-001", "TASK-006", "TASK-014"]
+    },
+    {
+      "req_id": "FA-REQ-W1-004",
+      "source": "docs/03 (Access Guard rules 1-10)",
+      "requirement": "Access Guard enforces: API/export preference, robots respected but not treated as legal authorization, no bypassing controls, no private personal data, no LinkedIn, no browser automation without ADR, unclear terms -> REQUIRES_HUMAN_REVIEW, every decision stored, raw records reference their access decision, disabled sources stop new crawling.",
+      "classification": "SPECIFIED",
+      "acceptance_criterion": "Rule-by-rule tests incl. negative cases (disallowed source rejected).",
+      "oracle_class": "SPECIFIED",
+      "planned_tasks": ["TASK-006"]
+    },
+    {
+      "req_id": "FA-REQ-W1-005",
+      "source": "docs/04 (Raw Archive: purpose, model, FKs, supersession); docs/23 (data integrity)",
+      "requirement": "Raw Archive is immutable/append-only; supersession inserts new records and preserves old ones with linked supersession fields.",
+      "classification": "SPECIFIED",
+      "acceptance_criterion": "No update path for raw content; supersession test preserves old record.",
+      "oracle_class": "SPECIFIED",
+      "planned_tasks": ["TASK-003"]
+    },
+    {
+      "req_id": "FA-REQ-W1-006",
+      "source": "docs/24 §2 (Raw Archive idempotency; unique index; crawler behavior)",
+      "requirement": "Session duplicate guard: unique (source_id, url, content_hash, crawl_session_id); same-content different-provenance rows allowed; crawler returns existing record on UniqueViolation. NOTE: this REPLACES doc-04's global UNIQUE(content_hash_sha256) constraint where they conflict — doc 24 wins.",
+      "classification": "SPECIFIED",
+      "acceptance_criterion": "Insert-policy matrix from 24 §2 verified by tests, including same-hash-different-url insertable.",
+      "oracle_class": "SPECIFIED",
+      "planned_tasks": ["TASK-003"]
+    },
+    {
+      "req_id": "FA-REQ-W1-007",
+      "source": "docs/15 (hash chain, SQL table, append-only enforcement); docs/24 §8 (write pattern)",
+      "requirement": "Hash-chained append-only Postgres audit log; row hash per doc-15 formula with canonical JSON; app role revoked update/delete; audit writes are explicit in-transaction service writes (Pattern A) — no async SQLAlchemy listeners.",
+      "classification": "SPECIFIED",
+      "acceptance_criterion": "Chain verification passes; tamper test detected; update/delete rejected.",
+      "oracle_class": "SPECIFIED",
+      "planned_tasks": ["TASK-002"]
+    },
+    {
+      "req_id": "FA-REQ-W1-008",
+      "source": "docs/06 (entire contract); docs/24 §5",
+      "requirement": "Redis Streams event bus: stream names, EventEnvelope, payload validation on emit, consumer groups, at-least-once + idempotent consumers (idempotency_keys table), DLQ after 3 failures, 90-day retention default; RawArchiveAddedPayload includes content_hash and crawl_session_id; audit_logger consumer appends consequential events to audit log.",
+      "classification": "SPECIFIED",
+      "acceptance_criterion": "The 7 tests listed in doc-06 'Tests' section pass.",
+      "oracle_class": "SPECIFIED",
+      "planned_tasks": ["TASK-004"]
+    },
+    {
+      "req_id": "FA-REQ-W1-009",
+      "source": "docs/22 (main tables: event_outbox); docs/23 (Week-1 done: 'Event outbox stores source/crawl/raw/fact events'); docs/16 (events/event_log.py)",
+      "requirement": "Durable Postgres event persistence (event outbox/log) alongside the operational Redis Streams bus (doc 06 keeps Redis as the bus; Postgres stores the durable record).",
+      "classification": "DERIVED",
+      "derivation": "Doc 06 rejects a Postgres event BUS; docs 22/23 require a Postgres event outbox as durable storage. Reconciled: Redis Streams = transport; event_outbox = durable record.",
+      "acceptance_criterion": "Emitted source/crawl/raw/fact events are persisted and queryable.",
+      "oracle_class": "SPECIFIED",
+      "planned_tasks": ["TASK-004"]
+    },
+    {
+      "req_id": "FA-REQ-W1-010",
+      "source": "docs/05 (entire contract); docs/24 §7",
+      "requirement": "Trust boundary: UntrustedBlob wrapping, sanitizer behavior (strip scripts/styles, normalize unicode, remove control chars, preserve evidence text, record injection hits, risk score), injection_patterns.yaml with the 6 initial pattern classes, prompt assembly with explicit delimiters, quarantine at injection_risk_score >= 0.85, model-call logging fields; UntrustedBlob immutable (model_copy), delimiter escaping so spoofed delimiters cannot close the data block.",
+      "classification": "SPECIFIED",
+      "acceptance_criterion": "Doc-05 minimum tests + doc-24 delimiter spoofing test pass; fixtures exist.",
+      "oracle_class": "SPECIFIED",
+      "planned_tasks": ["TASK-005"]
+    },
+    {
+      "req_id": "FA-REQ-W1-011",
+      "source": "docs/08 (agent boundary rule 1); docs/16 (crawlers boundary); docs/17 (security checklist); docs/23 (gate 3); docs/33 (interpretation rule 3: crawler never calls the reasoning model — invariant unchanged)",
+      "requirement": "Crawlers cannot call the reasoning model (the configured frontier LLM API, per AMENDMENT-001) and do not import the LLM router.",
+      "classification": "SPECIFIED",
+      "acceptance_criterion": "Static/architecture test: no LLM imports reachable from crawler modules.",
+      "oracle_class": "SPECIFIED",
+      "planned_tasks": ["TASK-007", "TASK-008"]
+    },
+    {
+      "req_id": "FA-REQ-W1-012",
+      "source": "docs/09 (API Crawler; Idempotency; Failure behavior; Minimum tests)",
+      "requirement": "API crawler: metadata first, raw JSON/CSV archived with query params in metadata, response body hashed, events emitted; duplicate-hash skip updates check metadata only; changed content supersedes; failure table honored (403/401 stop + warn, 429 backoff, robots stop, parse failure stores raw, budget breach graceful stop).",
+      "classification": "SPECIFIED",
+      "acceptance_criterion": "Doc-09 minimum tests pass for the implemented connectors.",
+      "oracle_class": "SPECIFIED",
+      "planned_tasks": ["TASK-007", "TASK-008"]
+    },
+    {
+      "req_id": "FA-REQ-W1-013",
+      "source": "docs/14 (scopes, key format, atomic decrement, breaker table, initial defaults, token logging); docs/23 (gate 8); docs/24 §11",
+      "requirement": "Redis budget counters with atomic operations, per-scope keys, initial defaults from doc 14, circuit-breaker behaviors, warning threshold; reserve() AND refund() with rollback of partial multi-scope reservations. Budget counters exist before any scheduled crawler runs.",
+      "classification": "SPECIFIED",
+      "acceptance_criterion": "Synthetic breach blocked/deferred in tests (doc 23 done criterion); refund/rollback test passes.",
+      "oracle_class": "SPECIFIED",
+      "planned_tasks": ["TASK-009"]
+    },
+    {
+      "req_id": "FA-REQ-W1-014",
+      "source": "docs/23 (Week-1 done: fact with provenance; final check #4); docs/24 §3 (FactStatus, transitions)",
+      "requirement": "Minimal Fact Store slice in Week 1: facts table with FactStatus including 'quarantined' from the first fact migration; at least one extracted fact storable with provenance (source refs, raw refs, evidence span, extraction method/version); transition map enforced with audit rows.",
+      "classification": "SPECIFIED",
+      "acceptance_criterion": "Fact insert requires provenance; invalid transition rejected; quarantined present in enum/CHECK.",
+      "oracle_class": "SPECIFIED",
+      "planned_tasks": ["TASK-010"]
+    },
+    {
+      "req_id": "FA-REQ-W1-015",
+      "source": "docs/13 (schedules, WorkflowStateRecord, node pattern, idempotency key format, source-check + daily ingestion graphs, failure/resume); docs/14 (hourly max_llm_calls: 0)",
+      "requirement": "Prefect 3 schedules + LangGraph workflows: hourly source_check_heartbeat (zero LLM calls), daily ingestion graph wiring scout -> guard -> crawler -> archive -> sanitize -> (minimal facts) -> events; state snapshots in Postgres; idempotent nodes; resume from last successful state.",
+      "classification": "SPECIFIED",
+      "acceptance_criterion": "Heartbeat runs end-to-end; node idempotency keys honored; resume test passes.",
+      "oracle_class": "SPECIFIED",
+      "planned_tasks": ["TASK-011"]
+    },
+    {
+      "req_id": "FA-REQ-W1-016",
+      "source": "docs/07 (component contracts, orchestrator rules, v0 layout, rejection behavior); docs/18 (v0 approved components a-g); docs/24 §4 (registry incl. RawArchiveRecordCard); docs/02 (SSE)",
+      "requirement": "Fath Canvas v0: backend UI spec generation restricted to approved components (AutopilotPulse, InvestigationQueue, SourceUpdateCard, AccessGuardDecisionCard, RawArchiveRecordCard, EarlyFactCard, ApprovalGateCard); backend Pydantic validation then frontend Zod validation; unknown fields/components rejected; no raw HTML or model-generated executable code; every component links event_ids; first screen leads with 'What Fath wants to investigate next'; FastAPI SSE streams events from Redis Streams; invalid model spec -> one retry -> safe fallback card.",
+      "classification": "SPECIFIED",
+      "acceptance_criterion": "Doc-27 Canvas gates (validate/reject/fallback) pass for v0 set; first-screen rule verified.",
+      "oracle_class": "SPECIFIED",
+      "planned_tasks": ["TASK-012", "TASK-013"]
+    },
+    {
+      "req_id": "FA-REQ-W1-017",
+      "source": "docs/23 (Week-1 done criteria, 12 items, as corrected by docs/24)",
+      "requirement": "All Week-1 done criteria demonstrably satisfied: registry table, persisted guard decisions, QOD + World Bank connectors archiving, Raw Archive hashes, >= 1 fact with provenance, trust-boundary injection tests, event outbox, Canvas renders Pulse + InvestigationQueue, budget breach handled, audit chain verifies. (Al Meezan collection criterion deferred by doc 24 — see FA-OPEN-015.)",
+      "classification": "SPECIFIED",
+      "acceptance_criterion": "Week-1 gate evidence run (integration smoke) with recorded outputs.",
+      "oracle_class": "SPECIFIED",
+      "planned_tasks": ["TASK-014"]
+    },
+    {
+      "req_id": "FA-REQ-W1-018",
+      "source": "docs/16 (canonical layout, boundary rules, coding + test conventions)",
+      "requirement": "Repository follows the doc-16 canonical layout; modules expose typed functions and Pydantic schemas; module boundary rules respected; each module ships schema-validation, idempotency, failure-behavior, and security-boundary tests where relevant.",
+      "classification": "SPECIFIED",
+      "acceptance_criterion": "Layout comparison; boundary tests.",
+      "oracle_class": "SPECIFIED",
+      "planned_tasks": ["TASK-001", "all Week-1 tasks"]
+    },
+    {
+      "req_id": "FA-REQ-W1-019",
+      "source": "docs/02 (database decision); docs/22 (§1 required extensions); docs/28 (Postgres 16, Redis 7)",
+      "requirement": "One Postgres 16 instance with uuid-ossp, vector (pgvector), and age (Apache AGE) extensions; Redis 7 only for runtime counters, locks, circuit breakers, and streams transport — never source of truth.",
+      "classification": "SPECIFIED",
+      "acceptance_criterion": "Extensions present after migration; compose boots both services.",
+      "oracle_class": "SPECIFIED",
+      "planned_tasks": ["TASK-001"]
+    },
+    {
+      "req_id": "FA-REQ-W1-020",
+      "source": "docs/28 (Migration policy; migration test)",
+      "requirement": "Alembic migrations with upgrade+downgrade; migration test pattern (upgrade head, tests, downgrade -1, upgrade head).",
+      "classification": "SPECIFIED",
+      "acceptance_criterion": "Migration cycle test green in CI for every migration.",
+      "oracle_class": "SPECIFIED",
+      "planned_tasks": ["TASK-001", "all schema tasks"]
+    },
+    {
+      "req_id": "FA-REQ-INV-001",
+      "source": "docs/00 (Non-negotiable principle); docs/01 (Exclusions); docs/02 (external actions blocked, browser automation disabled); docs/README (build constraints)",
+      "requirement": "INVARIANT: Autonomous in research, restricted in action. No external actions without approval, no browser automation in v1, no unrestricted shell for agents, no LMIS/QNWIS/ministry-private data, public/legally accessible sources only.",
+      "classification": "SPECIFIED",
+      "acceptance_criterion": "Architecture holds no code path for external actions without approval gates; exclusion tests.",
+      "oracle_class": "SPECIFIED",
+      "planned_tasks": ["all tasks"]
+    },
+    {
+      "req_id": "FA-REQ-INV-002",
+      "source": "docs/04 (store separation rules 1-8); docs/15 (provenance rules)",
+      "requirement": "INVARIANT: five-store separation; no speculation stored as fact; every object has provenance; every promotion audited; supersession preserves old records.",
+      "classification": "SPECIFIED",
+      "acceptance_criterion": "Store-boundary tests per store as stores are implemented.",
+      "oracle_class": "SPECIFIED",
+      "planned_tasks": ["TASK-003", "TASK-010", "Week 2+"]
+    },
+    {
+      "req_id": "FA-REQ-CP-001",
+      "source": "Control plane: AUTONOMOUS_DELIVERY_CONSTITUTION.md §9/§19; REVIEW_AND_ACCEPTANCE_POLICY.md §36-39; controller instruction (CI not configured — plan it)",
+      "requirement": "Deterministic CI for the target repo as the trusted verification mechanism: lint, type check, tests, migration cycle on every candidate; runs bound to exact commit SHA. NOT a project-docs requirement — imposed by delivery governance.",
+      "classification": "DERIVED",
+      "derivation": "Constitution requires trusted verification outside the implementer's control; the repo currently has none.",
+      "acceptance_criterion": "CI workflow exists and passes on candidate SHA; branch protection recommended to Salim (repo-admin action).",
+      "oracle_class": "SPECIFIED",
+      "planned_tasks": ["TASK-001"]
+    },
+    {
+      "req_id": "FA-REQ-CP-002",
+      "source": "Control plane workspace rule SG-TR-007",
+      "requirement": "Python dependencies and environments via uv; type hints on every public function; no bare except. Project docs specify pyproject.toml (doc 16) and do not name a package manager — no conflict.",
+      "classification": "SPECIFIED",
+      "note": "SPECIFIED by control-plane rule, not by project docs.",
+      "acceptance_criterion": "uv.lock committed; mypy/ruff enforce hints and exception hygiene in CI.",
+      "oracle_class": "SPECIFIED",
+      "planned_tasks": ["TASK-001", "all Python tasks"]
+    },
+    {
+      "req_id": "FA-REQ-CP-003",
+      "source": "Control plane: REVIEW_AND_ACCEPTANCE_POLICY.md §16-21; controller instruction",
+      "requirement": "Governed Git workflow: one task branch per bounded task, PR to main, independent review binds to exact immutable candidate SHA before merge; any post-review commit invalidates approval.",
+      "classification": "SPECIFIED",
+      "note": "SPECIFIED by control-plane governance.",
+      "acceptance_criterion": "Workflow followed for every task; recorded in delivery state.",
+      "oracle_class": "SPECIFIED",
+      "planned_tasks": ["all tasks"]
+    },
+    {
+      "req_id": "FA-REQ-W2-001",
+      "source": "docs/31 (steps 1-2); docs/10; docs/21; docs/33 (Correction 2: RTX 5090 workstation sizing)",
+      "requirement": "Week 2 (coarse): ParsedArtifact + chunk storage; BGE-M3 embedding baseline (1024-dim, stubbable locally), pgvector HNSW table, hybrid retrieval interface. Embedding/reranker serving sized for the single RTX 5090 workstation; A100-derived concurrency/batch assumptions re-derived per AMENDMENT-001.",
+      "classification": "SPECIFIED",
+      "acceptance_criterion": "Doc-31 step 1-2 acceptance lists.",
+      "oracle_class": "SPECIFIED",
+      "planned_tasks": ["W2 tasks (to be decomposed)"]
+    },
+    {
+      "req_id": "FA-REQ-W2-002",
+      "source": "docs/31 (steps 3-4); docs/17 (Week 2); docs/27 (extraction gates); docs/24 §3; docs/33 (Correction 4: frontier LLM APIs via provider-agnostic client)",
+      "requirement": "Week 2 (coarse): Fact Store full implementation (audited inserts, quarantined excluded from retrieval); extractors (economic indicator, trade flow, legal constraint v0, policy claim) with strict schemas, evidence spans, TrustBoundary-mediated LLM use through the provider-agnostic frontier-LLM client (AMENDMENT-001); golden extraction thresholds (e.g. indicator F1 >= 0.95).",
+      "classification": "SPECIFIED",
+      "acceptance_criterion": "Doc-31 acceptance + doc-27 extraction quality gates.",
+      "oracle_class": "REFERENCE",
+      "oracle_note": "Golden datasets are REFERENCE oracles; they must be curated with provenance before use (doc 27).",
+      "planned_tasks": ["W2 tasks (to be decomposed)"]
+    },
+    {
+      "req_id": "FA-REQ-W2-003",
+      "source": "docs/31 (steps 5-7, smoke test); docs/22 (graph tables); docs/24 §6",
+      "requirement": "Week 2 (coarse): Entity Resolver (exact/alias/trigram/embedding/create-new paths, ambiguity -> needs_review); Knowledge Graph Builder with provenance-mandatory edges incl. ARTICLE_PART_OF_LAW and FDI_TARGETS_COUNTRY; relational graph tables canonical with AGE mirror; EarlyFactCard + EvidenceGraphExplorer rendering; Week-2 smoke script.",
+      "classification": "SPECIFIED",
+      "acceptance_criterion": "Doc-31 step acceptance + smoke pass conditions (>=3 facts, >=5 nodes, >=3 edges).",
+      "oracle_class": "SPECIFIED",
+      "planned_tasks": ["W2 tasks (to be decomposed)"]
+    },
+    {
+      "req_id": "FA-REQ-W3-001",
+      "source": "docs/17 (Week 3); docs/10 (Connection Agent); docs/08 (Coverage Auditor); docs/13 (coverage audit graph); docs/27 (Week-3 gate, connection gates)",
+      "requirement": "Week 3 (coarse): Change Detector, Anomaly Miner, Connection Agent (hybrid graph+embedding+verification algorithm, scoring formula, thresholds 0.75/0.55), Coverage Auditor v0 with Al-Muhasibi discipline, investigation proposal workflow, Canvas investigation cards; >= 3 unprompted investigations with evidence and next action.",
+      "classification": "SPECIFIED",
+      "acceptance_criterion": "Doc-17 Week-3 verification + doc-27 Week-3 gate + connection quality gates.",
+      "oracle_class": "SPECIFIED",
+      "planned_tasks": ["W3 tasks (to be decomposed)"]
+    },
+    {
+      "req_id": "FA-REQ-W4-001",
+      "source": "docs/17 (Week 4); docs/26 (entire); docs/24 §10",
+      "requirement": "Week 4 (coarse): Hypothesis Store full; Policy Genome Generator; Scenario Runner v0 with TEMPLATE-BASED simulation only (4 templates), Latin Hypercube sampling (n=200 default), ranking formula, dominance rule with novelty exception >= 9.0, no-network sandbox with resource limits, reproducibility records; Causal Skeptic; ScenarioTournamentView.",
+      "classification": "SPECIFIED",
+      "acceptance_criterion": "Doc-26 test fixtures (9 items) + doc-27 Week-4 gate.",
+      "oracle_class": "SPECIFIED",
+      "planned_tasks": ["W4 tasks (to be decomposed)"]
+    },
+    {
+      "req_id": "FA-REQ-W5-001",
+      "source": "docs/17 (Week 5); docs/11 (five chains); docs/24 §9 (EvidenceBundle); docs/12 (poisoning); docs/04 (store 5); docs/25 (build order: RBAC before Week-5 publication flows); docs/27 (Sanad gates, Week-5 gate)",
+      "requirement": "Week 5 (coarse): Sanad five-chain validator with EvidenceBundle spans and independence rule; Source-Poisoning Detector (MinHash/Jaccard clustering, citation loops, convergence-without-primary-evidence, risk scoring with quarantine cascade); Belief Calibration Store; Run Replay; Source Integrity Radar; Auth/RBAC/approvals backend-enforced (Entra OIDC in production, dev token locally).",
+      "classification": "SPECIFIED",
+      "acceptance_criterion": "Doc-27 Sanad gates (numerical failure detection = 1.00; no Tier-A without EvidenceBundle), poisoning synthetic-attack gates, doc-25 RBAC test fixtures.",
+      "oracle_class": "REFERENCE",
+      "oracle_note": "Sanad/poisoning gates rely on curated golden/synthetic fixtures (REFERENCE) plus SPECIFIED thresholds.",
+      "planned_tasks": ["W5 tasks (to be decomposed)"]
+    },
+    {
+      "req_id": "FA-REQ-W6-001",
+      "source": "docs/17 (Week 6); docs/01 (success criteria 1-10); docs/08 (Briefing Composer, Approval Marshal); docs/32",
+      "requirement": "Week 6 (coarse): Insight Corpus (promotion only via Sanad); weekly Briefing Composer leading with autonomous investigations; Approval Marshal + human review flow; final Canvas demo flow; six-week success criteria met (>= 5 unprompted investigations, >= 3 validated opportunity cards, >= 1 full run replay).",
+      "classification": "SPECIFIED",
+      "acceptance_criterion": "Doc-17 Week-6 verification + doc-27 Week-6 gate + doc-01 success criteria.",
+      "oracle_class": "SPECIFIED",
+      "planned_tasks": ["W6 tasks (to be decomposed)"]
+    },
+    {
+      "req_id": "FA-REQ-AM-001",
+      "source": "docs/33 (Corrections 3-4; Interpretation rules 1-5; Verifier checklist items 2-3, 5)",
+      "requirement": "The LLM client is a provider-agnostic abstraction over frontier LLM APIs with configurable model routing; no provider is hard-coded as the only path; NO Azure OpenAI SDK, endpoint, deployment name, or environment variable exists anywhere in the implementation; provider/model/routing selection lives in configuration; every frontier-LLM call passes through Redis budget counters, rate limits, and circuit breakers and never receives raw untrusted content outside trust-boundary delimiters.",
+      "classification": "SPECIFIED",
+      "specified_by": "AMENDMENT-001",
+      "acceptance_criterion": "Amendment verifier checklist items 2, 3, 5: repo-wide scan finds no Azure OpenAI artifact; client supports >= configurable provider routing without code change; budget/trust-boundary mediation tested.",
+      "oracle_class": "SPECIFIED",
+      "planned_tasks": ["W2 LLM-client task (to be decomposed; precedes all extractor tasks)"]
+    },
+    {
+      "req_id": "FA-REQ-AM-002",
+      "source": "docs/33 (Corrections 1-2; Verifier checklist items 1, 4)",
+      "requirement": "No A100 assumption exists anywhere in implementation, configuration, or sizing. All local GPU workloads (BGE-M3 embeddings, PaddleOCR, Nougat, optional local reranker, simulation, batch processing) are sized and configured for a single NVIDIA RTX 5090 workstation; concurrency/batch/throughput assumptions derived from the 8xA100 platform are re-derived for this target at the owning task's planning time.",
+      "classification": "SPECIFIED",
+      "specified_by": "AMENDMENT-001",
+      "acceptance_criterion": "Amendment verifier checklist items 1 and 4: no A100 reference in implementation/config/sizing; GPU workload configs documented against the RTX 5090 target.",
+      "oracle_class": "SPECIFIED",
+      "planned_tasks": ["W2 embedding/OCR tasks, W4 simulation tasks (sizing re-derivation at each task's planning)"]
+    },
+    {
+      "req_id": "FA-REQ-EVAL-001",
+      "source": "docs/27 (golden structure, make eval, EvalReport, weekly regression); docs/23 (final check #10)",
+      "requirement": "Evaluation harness: golden/ datasets with the documented folder structure, `make eval` producing an EvalReport bound to git commit, weekly regression workflow gating the tournament.",
+      "classification": "SPECIFIED",
+      "acceptance_criterion": "make eval exists and produces EvalReport; gates enforce thresholds.",
+      "oracle_class": "REFERENCE",
+      "planned_tasks": ["W2+ (harness grows with capabilities)"]
+    },
+    {
+      "req_id": "FA-REQ-OPS-001",
+      "source": "docs/28 (backups, restore drill, health, metrics, secrets); docs/32 (operations readiness, kill criteria); docs/23 (final check #9); docs/33 (Flagged OPEN: production secrets/object-store hosting)",
+      "requirement": "Operations (coarse, pre-continuous-operation): Postgres WAL+daily backups, object-store mirror, monthly restore drill with report, /healthz + /readyz + /metrics, structured logs with trace ids, incident tables, kill criteria enforced. Production secrets/object-store hosting (doc-28 Azure Key Vault / Azure Blob) is flagged OPEN by AMENDMENT-001; the documented self-hosted paths (MinIO, WAL archiving, .env local dev only) are the operative interim on the workstation target.",
+      "classification": "SPECIFIED",
+      "acceptance_criterion": "Doc-32 operations checklist with evidence; backup+restore drill pass before continuous operation.",
+      "oracle_class": "SPECIFIED",
+      "planned_tasks": ["W5-W6 ops tasks (to be decomposed)"]
+    }
+  ],
+  "open_items": [
+    {
+      "open_id": "FA-OPEN-001",
+      "classification": "OPEN",
+      "materiality": "non-material for Weeks 1-2; material at Week-3 (InvestigationCard) and Week-6 (WeeklyBriefing) task planning",
+      "statement": "Canvas registry delta: doc 24 §4 ComponentName omits InvestigationCard and WeeklyBriefing (both fully specified in doc 07) and adds WhatFathWantsToInvestigate (doc 32 §5 also requires it as first screen). Doc 24 wins where conflicting, but its section intent is inclusion of RawArchiveRecordCard, not deletion of other components.",
+      "resolution_path": "ADR or Salim clarification at Week-3 planning; Week-1 v0 set (doc 18 a-g) is identical in both documents, so Week 1 is unaffected."
+    },
+    {
+      "open_id": "FA-OPEN-002",
+      "classification": "OPEN",
+      "materiality": "material only at Week-5 Sanad implementation",
+      "statement": "Source-grounding minimum cosine similarity: docs 10 and 11 say 0.72; doc 21 §8 says 0.68 (and 0.62 for exploration). All are 'initial defaults to be calibrated'. Doc 24 does not resolve.",
+      "resolution_path": "Resolve by ADR at Week-5 task planning (docs 10+11 concur on 0.72). Do not silently choose during implementation."
+    },
+    {
+      "open_id": "FA-OPEN-003",
+      "classification": "OPEN",
+      "materiality": "material at Week-2 embedding tasks",
+      "statement": "Embedding namespace lists differ: doc 10 EmbeddingNamespace enum (raw_chunk_legal, raw_chunk_report, raw_chunk_news, fact, hypothesis, insight) vs doc 21 §5 (legal_articles, open_data_indicators, trade_flows, company_disclosures, reports, news_events, benchmark_policy, facts, insights).",
+      "resolution_path": "Resolve by ADR at Week-2 task planning; doc 21 is the detailed appendix and its list covers Week-1 source classes better. Both docs agree hypotheses are never retrieved as evidence."
+    },
+    {
+      "open_id": "FA-OPEN-004",
+      "classification": "OPEN",
+      "materiality": "material at Week-2 task planning",
+      "statement": "Module paths: doc 31 uses src/fath/pipeline/* and db/models file names that differ from doc 16 canonical layout (parsers/, embeddings/, extractors/ with different filenames). Doc 23 anti-drift rule requires an ADR for module paths not defined in the folder.",
+      "resolution_path": "Week-2 planner produces an ADR reconciling doc-31 deliverable paths with doc-16 layout before Week-2 implementation."
+    },
+    {
+      "open_id": "FA-OPEN-005",
+      "classification": "OPEN",
+      "materiality": "non-material (naming/sequencing only)",
+      "statement": "Migration numbering: doc 31 labels Week-2 migrations 0003-0006 with facts at 0005, while doc 23 Week-1 done criteria require a minimal fact insert in Week 1 (so a Week-1 facts migration must exist). Doc 24 §3 requires quarantined 'from the first migration' (doc 23: 'first fact migration').",
+      "resolution_path": "Treat doc-31 migration filenames as illustrative; number migrations sequentially as created; the FIRST migration that creates the facts table includes the full FactStatus enum with quarantined. Recorded in BOOTSTRAP_PLAN."
+    },
+    {
+      "open_id": "FA-OPEN-006",
+      "classification": "OPEN",
+      "materiality": "non-material (physical naming); must be fixed once, in TASK-001",
+      "statement": "Table naming variance: docs 03/04 use source_registry + access_decisions + raw_archive; doc 22 lists access_guard_decisions; doc 24 snippets use sources + raw_archive_records. Doc 24's sections state semantic corrections (status column, duplicate guard), not renames.",
+      "resolution_path": "DERIVED resolution proposed in BOOTSTRAP_PLAN: canonical physical names = source_registry, access_decisions, raw_archive (majority usage incl. doc-04 FK definitions); doc-24 semantics applied to those tables. Plan reviewer confirms or rejects this reading."
+    },
+    {
+      "open_id": "FA-OPEN-007",
+      "classification": "OPEN",
+      "materiality": "non-material",
+      "statement": "Event type casing: doc 06 catalog uses CamelCase event types; docs 05/09/12 mention snake_case names (e.g. sanitization_completed vs SanitizationCompleted; raw_archived vs RawArchiveAdded).",
+      "resolution_path": "DERIVED: doc 06 is the event contract; its catalog names are canonical; snake_case mentions map to the corresponding catalog events. Doc 24 §5 (CamelCase payload) supports this."
+    },
+    {
+      "open_id": "FA-OPEN-008",
+      "classification": "OPEN",
+      "materiality": "non-material",
+      "statement": "UntrustedBlob field naming: doc 05 model has sanitized_text and no truncation flag; doc 24 §7 refers to blob.content and content_truncated.",
+      "resolution_path": "DERIVED: doc-05 model is the field contract; doc-24 immutability + escaping semantics are binding; a content_truncated-equivalent flag is added when truncation is implemented. Reviewer confirms."
+    },
+    {
+      "open_id": "FA-OPEN-009",
+      "classification": "OPEN",
+      "materiality": "material from Week-2 LLM extraction onward; NOT needed for Week 1 (hourly heartbeat max_llm_calls=0; Week-1 extraction path deterministic; UI orchestration deterministic event->spec mapping)",
+      "statement": "SUPERSEDED WORDING (Azure OpenAI GPT-5.4 provisioning) voided by AMENDMENT-001. Current item: frontier-LLM API credentials (for whichever provider(s) Salim configures) are not yet provisioned in any environment for this delivery flow.",
+      "resolution_path": "Salim provisions API key(s) and initial routing configuration before Week-2 LLM-dependent tasks are dispatched; becomes BLOCKED_FOR_SALIM only at that point. No Azure OpenAI artifact may be created (docs/33 verifier item 2)."
+    },
+    {
+      "open_id": "FA-OPEN-010",
+      "classification": "OPEN",
+      "materiality": "material for real embedding/OCR quality from Week 2-3; Week-2 can stub BGE-M3 locally per doc 31",
+      "statement": "SUPERSEDED WORDING (8xA100 VM) voided by AMENDMENT-001 Correction 1. Current item: the single RTX 5090 workstation (embeddings, OCR, reranking, simulation batch per docs/33 Correction 2) is not yet provisioned/connected to this delivery flow, and A100-derived concurrency/batch assumptions in docs 21/26 must be re-derived for it.",
+      "resolution_path": "Salim confirms workstation availability; owning Week-2/Week-4 task plans re-derive sizing for the RTX 5090 target; stub path keeps Week-2 unblocked."
+    },
+    {
+      "open_id": "FA-OPEN-011",
+      "classification": "OPEN",
+      "materiality": "material before production deployment; local dev token path is specified (doc 25) so development is unblocked; per docs/33 not required for Week-1 scope",
+      "statement": "Production authentication provider: doc-25 assumes Microsoft Entra ID / Azure AD OIDC; AMENDMENT-001 flags this OPEN for the production phase (not voided, not confirmed). No app registration/tenant configuration exists yet.",
+      "resolution_path": "Salim decides the production auth provider when the production phase makes it material; dev uses FATH_DEV_AUTH per doc 25."
+    },
+    {
+      "open_id": "FA-OPEN-012",
+      "classification": "OPEN",
+      "materiality": "non-material until UN Comtrade activation (Tier 1, post-Week-1)",
+      "statement": "COMTRADE_API_KEY 'if used' (doc 28) — Comtrade access mode and key not yet decided/provisioned.",
+      "resolution_path": "Decide at Tier-1 source activation via doc-29 onboarding checklist."
+    },
+    {
+      "open_id": "FA-OPEN-013",
+      "classification": "OPEN",
+      "materiality": "non-material (resolved by DERIVED sequencing)",
+      "statement": "Week-1 minimal fact capability (doc 23 done criteria) vs 'Fact Store full implementation' listed in Week 2 (docs 17, 31).",
+      "resolution_path": "DERIVED: Week 1 delivers minimal schema + one provenance-bearing insert path; Week 2 delivers the full store. Reviewer confirms."
+    },
+    {
+      "open_id": "FA-OPEN-014",
+      "classification": "OPEN",
+      "materiality": "cosmetic",
+      "statement": "Docs 21 and 22 carry internal headers numbered 16 and 17 (duplicate of file 16/17 numbering). Filenames are canonical identity.",
+      "resolution_path": "None required; recorded to prevent citation confusion."
+    },
+    {
+      "open_id": "FA-OPEN-015",
+      "classification": "RESOLVED_BY_24",
+      "materiality": "resolved",
+      "statement": "Doc 23's Week-1 done criterion 'Al Meezan collector can archive an approved legal page or manually supplied artifact' conflicts with doc 24 §1 (Week-1 active = 3 sources; Access Guard denies candidate_manual_review) and doc 18 ('do not crawl it in Week 1'). Doc 23's own final-v3 section (#3: 'Al Meezan is inactive until manual source review passes') supersedes its earlier criterion.",
+      "resolution": "Doc 24 wins: Week 1 defines Al Meezan in the registry as candidate_manual_review with NO collection. The collector criterion defers until manual source review passes and the source reaches active."
+    },
+    {
+      "open_id": "FA-OPEN-016",
+      "classification": "RESOLVED_BY_24",
+      "materiality": "resolved (must be implemented correctly in TASK-003)",
+      "statement": "Doc 04 requires ALTER TABLE raw_archive ... UNIQUE (content_hash_sha256) (global uniqueness), which contradicts doc 24 §2's insert policy ('same content_hash + different url -> insert new row, because provenance differs').",
+      "resolution": "Doc 24 wins: NO global unique constraint on content hash; use the session duplicate-guard unique index (source_id, url, content_hash, crawl_session_id). Doc-09 duplicate-hash skip behavior applies per source/url check flow, not as a DB-wide constraint."
+    },
+    {
+      "open_id": "FA-OPEN-017",
+      "classification": "RESOLVED_BY_24",
+      "materiality": "resolved",
+      "statement": "Doc 04 FactLifecycle enum (extracted, validation_pending, validated, contradicted, rejected, superseded, quarantined) vs doc 24 §3 FactStatus (extracted, corroborated, superseded, quarantined, rejected) with an explicit transition map.",
+      "resolution": "Doc 24 wins: FactStatus + ALLOWED_FACT_TRANSITIONS from doc 24 §3 govern the fact lifecycle field. Doc-04's separate ValidationStatus field (validation pipeline state) is unaffected where it does not conflict."
+    },
+    {
+      "open_id": "FA-OPEN-018",
+      "classification": "OPEN",
+      "materiality": "non-blocking for all weeks (provider/model/routing are configuration-level per docs/33 rule 5); material only if a single mandatory provider must become project authority",
+      "statement": "Mandatory frontier provider/model designation: AMENDMENT-001 rule 5 holds provider selection, model selection, and routing policy at configuration level. If any single mandatory provider or model must be fixed as project authority, that decision is OPEN and reserved to Salim.",
+      "resolution_path": "Implement configuration-driven routing (no hard-coded sole provider). Escalate to Salim only if project authority must name a mandatory provider."
+    },
+    {
+      "open_id": "FA-OPEN-019",
+      "classification": "OPEN",
+      "materiality": "material only at the production phase; per docs/33 not required for Week-1 scope",
+      "statement": "Production secrets and object-store hosting: doc-28's 'Azure Key Vault only' and 'Azure Blob' options are flagged OPEN by AMENDMENT-001 under the workstation deployment target. The documented self-hosted alternatives (MinIO, WAL archiving, .env for local development only) are the operative interim path.",
+      "resolution_path": "Salim decides production hosting when the production phase makes it material; until then build against MinIO + .env-local-dev per doc 28's self-hosted paths."
+    }
+  ]
+}
