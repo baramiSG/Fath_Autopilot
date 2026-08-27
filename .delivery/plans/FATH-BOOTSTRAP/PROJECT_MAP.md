@@ -4,7 +4,7 @@
 **Project:** FATH_AUTOPILOT · **Task:** FATH-BOOTSTRAP · **Role:** CHIEF_ARCHITECT
 **Baseline commit:** `ae5a4ea7db30d9ba243e29c98424702f5e0fb7a1`
 
-> **WARNING.** This map assists future agents. It does not become architecture authority merely because it is convenient. The canonical documents under `docs/` (with `docs/33` AMENDMENT-001 at the top of precedence, then `docs/24` overriding 00–23 where they conflict) remain authoritative. At baseline, the repository contains **only `docs/`** — everything under "Intended repository structure" is the doc-16 target state, not existing code.
+> **WARNING.** This map assists future agents. It does not become architecture authority merely because it is convenient. The canonical documents under `docs/` (with `docs/34` AMENDMENT-002 and `docs/33` AMENDMENT-001 at the top of precedence — 34 wins over everything earlier where conflicting — then `docs/24` overriding 00–23 where they conflict) remain authoritative. At the plan-V4 state, the repository contains **only `docs/` and `.delivery/`** — everything under "Intended repository structure" is the doc-16 target state, not existing code.
 
 ## 1. Current repository state (verified at baseline)
 
@@ -71,10 +71,11 @@ fath-autopilot/  (this repo root)
 | Simulation sandbox worker | No-network template simulation container | Week 4 |
 | Caddy reverse proxy | Production ingress | Production |
 
-## 4. Datastores and key tables (authority: docs/04, 22, 15, 25; naming resolution in BOOTSTRAP_PLAN §7)
+## 4. Datastores and key tables (authority: docs/04, 22, 15, 25, **34**; naming resolution in BOOTSTRAP_PLAN §7)
 
+- **Source identity (docs/34 AMENDMENT-002 — governing):** `source_registry` is the single canonical source table (NO `sources` table); `source_id UUID PRIMARY KEY` immutable; `slug TEXT NOT NULL UNIQUE` readable/config identifier; every persisted source FK → `source_registry(source_id)`, never `slug` absent a human-approved ADR; transport `source_id` strings = serialized UUIDs; per-surface mapping in `PROPAGATION_MAP.md`.
 - **Five memory stores:** raw_archive, fact_store/facts, hypothesis_store/hypotheses, insight_corpus/insights, belief_calibration.
-- **Registry/control:** source_registry, access_decisions, source_onboarding_checklists, source_terms_snapshots.
+- **Registry/control:** source_registry, access_decisions, source_onboarding_checklists (UUID FK per docs/34 §7), source_terms_snapshots (UUID FK per docs/34 §7).
 - **Events/audit:** event_outbox, idempotency_keys, audit_log (hash-chained, append-only).
 - **Graph:** graph_nodes, graph_edges (relational canonical) + AGE graph `fath_economic_graph` (mirror).
 - **Vectors:** document_chunks, embeddings (pgvector HNSW).
@@ -109,8 +110,9 @@ Backlog tiers and activation order: doc 30. Reasoning: frontier LLM APIs via a p
 
 | Question | Authority |
 |---|---|
-| What is locked technologically? | docs/00, 02 as amended by docs/33 AMENDMENT-001 (+ ADRs under docs/adr/ when created) |
-| What overrides what? | docs/33 (AMENDMENT-001) over README + 00–32 incl. 24; then docs/24 over 00–23; see AUTHORITY_MANIFEST precedence_rules |
+| What is locked technologically? | docs/00, 02 as amended by docs/33 and docs/34 (+ ADRs under docs/adr/ when created) |
+| What overrides what? | docs/34 (AMENDMENT-002) over everything earlier incl. 33 and 24 where conflicting; docs/33 (AMENDMENT-001) over README + 00–32 incl. 24; then docs/24 over 00–23; see AUTHORITY_MANIFEST precedence_rules |
+| Source identity (any `source_id`/`slug` question)? | docs/34 AMENDMENT-002 (UUID PK + unique slug on source_registry; FK/transport/YAML rules); per-surface map: `PROPAGATION_MAP.md` (aid) |
 | Compute platform and reasoning provider? | docs/33 AMENDMENT-001 (RTX 5090 workstation; frontier LLM APIs, provider-agnostic client; no Azure OpenAI) |
 | What must Week 1 deliver? | docs/17 (Week 1), 18, 23 done criteria — as corrected by 24 §1 |
 | Schemas for stores/events/UI? | docs/04, 06, 07 (+ 24 corrections), 21, 22 |

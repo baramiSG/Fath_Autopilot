@@ -6,24 +6,25 @@
   "generated_by_role": "CHIEF_ARCHITECT",
   "baseline_commit": "ae5a4ea7db30d9ba243e29c98424702f5e0fb7a1",
   "amendment_commit": "234a24d9e012710352d35aa5b1314a6395614945",
-  "amendment_note": "AMENDMENT-001 (docs/33, HUMAN_APPROVED_AMENDMENT, sha256 3ea00519a4e7b79adb2e1f60afcfd4c393906033c148fd254fb1d71e15c61589) is the TOP of project-document precedence. All 'GPT-5.4' wording cited from earlier documents in this register is read as 'the configured frontier reasoning model, accessed via API' per its interpretation rules 1-2; all A100 compute assumptions are void; local GPU compute target is a single RTX 5090 workstation; no Azure OpenAI SDK/endpoint/env may exist in the implementation.",
+  "amendment_002_commit": "af00923853e0234da403231258c822b949e9da00",
+  "amendment_note": "AMENDMENT-001 (docs/33, HUMAN_APPROVED_AMENDMENT, sha256 3ea00519a4e7b79adb2e1f60afcfd4c393906033c148fd254fb1d71e15c61589) and AMENDMENT-002 (docs/34, HUMAN_APPROVED_AMENDMENT, sha256 0edb5245999e88382eab1c8a0f9679f45e60d3cd680903f3b56f3a3768dd9b99) are the TOP of project-document precedence; doc 34 wins over everything earlier where conflicting (no conflict with 33). Per docs/33: all 'GPT-5.4' wording cited from earlier documents in this register is read as 'the configured frontier reasoning model, accessed via API'; all A100 compute assumptions are void; local GPU compute target is a single RTX 5090 workstation; no Azure OpenAI SDK/endpoint/env may exist in the implementation. Per docs/34: every source-identity citation in this register is read under the AMENDMENT-002 model (source_id = UUID PK on source_registry; slug TEXT NOT NULL UNIQUE; all persisted source FKs to source_registry(source_id); transport source_id strings = serialized UUIDs; YAML keys on slug); per-surface mapping in PROPAGATION_MAP.md.",
   "warning": "NAVIGATION AID ONLY — NOT PROJECT AUTHORITY. Canonical docs/ documents remain authoritative. All FA-REQ-* and FA-OPEN-* identifiers are DERIVED internal identifiers created by the planner; the canonical documents do not define requirement IDs. Requirement statements here are traceability pointers, not replacements for the cited sections.",
   "id_convention": "FA-REQ-W<week>-<nnn> for week-scoped requirements, FA-REQ-CP-<nnn> for control-plane-imposed requirements, FA-REQ-<domain>-<nnn> for cross-cutting; FA-OPEN-<nnn> for open items/contradictions. Oracle classes per control-plane ORACLE_POLICY.md: SPECIFIED | REFERENCE | JUDGMENT.",
   "granularity_note": "Week-1 requirements are traced at implementation depth. Weeks 2-6 are traced at coarser granularity and MUST be re-decomposed by the planner at each week's task-planning time.",
   "requirements": [
     {
       "req_id": "FA-REQ-W1-001",
-      "source": "docs/03 (Pydantic model: Source Registry; Initial registry seeds; Indices); docs/29 (TEXT identifier, onboarding before activation); docs/30 (textual ids, verifier checklist)",
-      "requirement": "Source Registry schema per SourceRegistryRecord contract (identity model: dual identifier — source_id UUID PRIMARY KEY per docs 03/04/21 plus slug TEXT NOT NULL UNIQUE housing the docs 24/29/30/06 textual identifier; DERIVED reconciliation FA-OPEN-021, BOOTSTRAP_PLAN 7.4) with recommended indices; the 16 initial seed records. NOTE (FATH-PR-001): authority establishes seed identities but NOT base URLs, reliability tiers, rate limits, or collection modes, and doc 29 requires human-approved onboarding checklists before activation — seed VALUES are gated on FA-OPEN-020 (Salim-approved seed value table).",
-      "classification": "SPECIFIED (schema); seed values OPEN pending FA-OPEN-020",
-      "acceptance_criterion": "Schema/model match doc-03 contract with FA-OPEN-021 identifier resolution (TASK-001); all 16 seeds present, valid, and matching the Salim-approved value table (TASK-006, post-FA-OPEN-020).",
+      "source": "docs/34 sections 1-3 (identity model - SPECIFIED); docs/03 (Pydantic model: Source Registry; Initial registry seeds; Indices); docs/29 (onboarding before activation; DDL as superseded by 34 section 7); docs/30 (slugs per 34 section 11, verifier checklist)",
+      "requirement": "Source Registry schema per the AMENDMENT-002 identity model: source_registry single canonical table (no sources table), source_id UUID PRIMARY KEY (immutable), slug TEXT NOT NULL UNIQUE, all other SourceRegistryRecord fields per doc-03 contract, doc-24 section-1 status column + CHECK, doc-03 recommended indices; the 16 initial seed records (identities as slugs per docs/34 section 11). NOTE (FATH-PR-001): authority establishes seed identities but NOT base URLs, reliability tiers, rate limits, or collection modes, and doc 29 requires human-approved onboarding checklists before activation - seed VALUES are gated on FA-OPEN-020 (Salim-approved seed value table). AMENDMENT-002 resolves identity semantics only, not these values.",
+      "classification": "SPECIFIED (schema, by AMENDMENT-002 + docs 03/24); seed values OPEN pending FA-OPEN-020",
+      "acceptance_criterion": "Schema/model match the docs/34 model + doc-03 contract, proven by the TASK-001 A4 expected-schema oracle (docs/34 section 13); all 16 seeds present, valid, and matching the Salim-approved value table (TASK-006, post-FA-OPEN-020).",
       "oracle_class": "SPECIFIED",
       "planned_tasks": ["TASK-001 (schema only)", "TASK-006 (seeds + onboarding evidence, gated on FA-OPEN-020)"]
     },
     {
       "req_id": "FA-REQ-W1-002",
-      "source": "docs/24 §1 (Source status enum; Access Guard rule)",
-      "requirement": "Source status enum (candidate, candidate_manual_review, approved_inactive, active, suspended, quarantined, retired) with DB CHECK; Access Guard denies any non-active source.",
+      "source": "docs/24 §1 (Source status enum; Access Guard rule), applied to source_registry per docs/34 §1 (no sources table)",
+      "requirement": "Source status enum (candidate, candidate_manual_review, approved_inactive, active, suspended, quarantined, retired) with DB CHECK and DEFAULT 'candidate' on source_registry; Access Guard denies any non-active source.",
       "classification": "SPECIFIED",
       "acceptance_criterion": "Status column + CHECK exists from first migration; guard returns deny with manual_review_required/source_not_active reasons.",
       "oracle_class": "SPECIFIED",
@@ -326,6 +327,16 @@
       "planned_tasks": ["W2 embedding/OCR tasks, W4 simulation tasks (sizing re-derivation at each task's planning)"]
     },
     {
+      "req_id": "FA-REQ-AM-003",
+      "source": "docs/34 AMENDMENT-002 §§1-13 and verifier checklist items 1-5",
+      "requirement": "Source identity model enforced everywhere: source_registry is the only canonical source table (no sources table); source_registry.source_id is a UUID PRIMARY KEY and source_registry.slug is TEXT NOT NULL UNIQUE; every persisted source FK references source_registry(source_id) and none references slug absent an explicit human-approved ADR; no contract uses source_id to carry a slug; transport source_id strings are serialized UUIDs with readable identifiers traveling as source_slug; source YAML/catalog definitions key on slug with UUIDs assigned at registry-record creation. Planner obligations: full-corpus propagation sweep (§12 - delivered as PROPAGATION_MAP.md, binding on all task plans) and TASK-001 independently derived expected-schema oracle (§13 - delivered as TASK-001_PLAN A4).",
+      "classification": "SPECIFIED",
+      "specified_by": "AMENDMENT-002",
+      "acceptance_criterion": "TASK-001 A4 oracle proves items 1-2 and the FK-target negatives (no sources table; no slug-targeting FK); each owning task's plan carries its PROPAGATION_MAP obligations; docs/34 verifier checklist items 1-5 hold at every review.",
+      "oracle_class": "SPECIFIED",
+      "planned_tasks": ["TASK-001 (schema + oracle)", "TASK-006 (compliance tables, YAML, Access Guard)", "TASK-004/007/008/012/013 (transport surfaces)", "all future tasks touching source identity"]
+    },
+    {
       "req_id": "FA-REQ-EVAL-001",
       "source": "docs/27 (golden structure, make eval, EvalReport, weekly regression); docs/23 (final check #10)",
       "requirement": "Evaluation harness: golden/ datasets with the documented folder structure, `make eval` producing an EvalReport bound to git commit, weekly regression workflow gating the tournament.",
@@ -385,7 +396,7 @@
       "classification": "OPEN",
       "materiality": "non-material (physical naming); must be fixed once, in TASK-001",
       "statement": "Table naming variance: docs 03/04 use source_registry + access_decisions + raw_archive; doc 22 lists access_guard_decisions; doc 24 snippets use sources + raw_archive_records. Doc 24's sections state semantic corrections (status column, duplicate guard), not renames.",
-      "resolution_path": "DERIVED resolution proposed in BOOTSTRAP_PLAN: canonical physical names = source_registry, access_decisions, raw_archive (majority usage incl. doc-04 FK definitions); doc-24 semantics applied to those tables. Plan reviewer confirms or rejects this reading."
+      "resolution_path": "The sources-vs-source_registry component is now SPECIFIED: docs/34 §1 establishes source_registry as the single canonical source table and supersedes sources(id) references. Remaining DERIVED resolution (BOOTSTRAP_PLAN §7.1) for the other names: access_decisions and raw_archive (majority usage incl. doc-04 FK definitions); doc-24 semantics applied to those tables. Plan reviewer confirms or rejects the remaining DERIVED reading."
     },
     {
       "open_id": "FA-OPEN-007",
@@ -487,10 +498,10 @@
     },
     {
       "open_id": "FA-OPEN-021",
-      "classification": "OPEN",
-      "materiality": "material for TASK-001 schema design; carries a DERIVED resolution for reviewer confirmation",
-      "statement": "Source identity split across contract layers (FATH-PR-001/FATH-P2-001): UUID storage contracts (doc 03 source_id: UUID; doc 04 FK raw_archive.source_id -> source_registry.source_id; doc 21 DDL source_id UUID NOT NULL REFERENCES source_registry(source_id); doc 05 UntrustedBlob.source_id: UUID) versus textual identifiers (doc 24 section 1 Week-1 sets and sections 4-5/8 payloads source_id: str with source_name; doc 29 TEXT compliance tables; doc 30 template; doc 06 event payloads source_id: str).",
-      "resolution_path": "DERIVED dual-identifier reconciliation (BOOTSTRAP_PLAN 7.4), nothing superseded: source_registry.source_id UUID PRIMARY KEY (SPECIFIED, docs 03/04/21) plus slug TEXT NOT NULL UNIQUE (textual identifier existence SPECIFIED by usage; distinct-column housing DERIVED; column name slug PROPOSED). Propagation: UUID FKs verbatim to source_registry(source_id); doc-29 TEXT columns verbatim FK to source_registry(slug) (TASK-006); event/UI payload source_id: str carries the slug; doc-30 YAML source_id key maps to slug at seed load; SourceRegistryRecord = doc-03 fields verbatim + slug + doc-24 status. Reviewer confirms; if the slug addition is found indefensible, minimal Salim question: confirm the dual-identifier model or designate which identity family supersedes."
+      "classification": "RESOLVED_BY_AMENDMENT_002",
+      "materiality": "resolved (was material for TASK-001 schema design; blocked plan attempts 1-3 as FATH-PR-001/P2-001/P3-001)",
+      "statement": "Source identity split across contract layers (FATH-PR-001/FATH-P2-001/FATH-P3-001): UUID storage contracts (doc 03 source_id: UUID; doc 04 FK raw_archive.source_id -> source_registry.source_id; doc 21 DDL source_id UUID NOT NULL REFERENCES source_registry(source_id); doc 05 UntrustedBlob.source_id: UUID) versus textual identifiers (doc 24 section 1 Week-1 sets and sections 4-5/8 payloads source_id: str with source_name; doc 29 TEXT compliance tables referencing a nonexistent sources(id) parent; doc 30 template; doc 06 event payloads source_id: str). Attempt-3 review (FATH-P3-001, BLOCKER) established that no agent could resolve this without human authority under the doc-23 anti-drift rule; escalated as FATH-BOOTSTRAP-ESCALATION-001.",
+      "resolution": "RESOLVED by explicit owner decision recorded as AMENDMENT-002 (docs/34, sha256 0edb5245999e88382eab1c8a0f9679f45e60d3cd680903f3b56f3a3768dd9b99, commit af00923853e0234da403231258c822b949e9da00, human-approved 2026-08-27): source_registry single canonical table; source_id UUID PRIMARY KEY immutable; slug TEXT NOT NULL UNIQUE; universal semantic rule; Pydantic source_id UUID + separate source_slug; all persisted source FKs to source_registry(source_id), never slug absent human-approved ADR; doc-29 DDL superseded to UUID; YAML keys on slug; transport source_id strings are serialized UUIDs (they do NOT carry slugs - this reverses the V3 event/UI mapping); UUID contracts survive; textual identifiers survive as slugs. Full per-surface propagation: PROPAGATION_MAP.md. Oracle: TASK-001_PLAN A4 per docs/34 section 13."
     }
   ]
 }

@@ -7,19 +7,26 @@
   "generated_by_model": "Claude Fable 5 (1M, Thinking ON, Max effort)",
   "baseline_commit": "ae5a4ea7db30d9ba243e29c98424702f5e0fb7a1",
   "amendment_commit": "234a24d9e012710352d35aa5b1314a6395614945 (adds docs/33_AMENDMENT_001_COMPUTE_AND_LLM_PROVIDER.md; human-approved authority record committed before any plan artifacts)",
+  "amendment_002_commit": "af00923853e0234da403231258c822b949e9da00 (adds docs/34_AMENDMENT_002_SOURCE_IDENTITY.md; human-approved owner decision resolving FATH-BOOTSTRAP-ESCALATION-001/FATH-P3-001; committed alone)",
   "hash_algorithm": "SHA-256",
   "warning": "THIS MANIFEST IS A NAVIGATION AID ONLY. It is NOT project authority. The canonical documents under docs/ remain the sole project authority. If this manifest disagrees with a canonical document, the canonical document wins. Do not use this manifest to reinterpret, summarize away, or overwrite canonical content. Hashes are recorded at baseline_commit to make drift detectable; any hash mismatch means the manifest is stale and must not be trusted until regenerated.",
   "precedence_rules": [
     {
+      "rule_id": "PREC-00",
+      "classification": "SPECIFIED",
+      "statement": "docs/34_AMENDMENT_002_SOURCE_IDENTITY.md (AMENDMENT-002, human-approved by Salim 2026-08-27, resolving escalation FATH-BOOTSTRAP-ESCALATION-001 / finding FATH-P3-001) sits at the TOP of project-document precedence alongside AMENDMENT-001. Where AMENDMENT-002 conflicts with ANY earlier document - including doc 33, doc 24, and the combined file - AMENDMENT-002 wins. It does not conflict with AMENDMENT-001 (different domains: source identity vs compute/LLM provider). Substance (sections 1-11): source_registry is the single canonical source table (no sources table; sources(id) references superseded to source_registry(source_id)); source_id UUID PRIMARY KEY immutable; slug TEXT NOT NULL UNIQUE human/config identifier; universal semantic rule (source_id = UUID always; slug/source_slug = readable id; source_name display-only); Pydantic keeps source_id UUID with separate source_slug where needed; ALL persisted source FKs reference source_registry(source_id), never slug absent an explicit human-approved ADR; doc-29 TEXT FK DDL superseded to UUID; YAML/catalogs key on slug; transport source_id strings are serialized UUIDs with source_slug exposed separately where useful; existing UUID contracts (docs 03/04/05/07/21) survive; textual identifiers (docs 24/29/30) survive as slugs. Section 12 mandates a full-corpus propagation sweep (delivered: .delivery/plans/FATH-BOOTSTRAP/PROPAGATION_MAP.md); section 13 mandates the TASK-001 expected-schema oracle (delivered: TASK-001_PLAN.md A4).",
+      "source": "docs/34_AMENDMENT_002_SOURCE_IDENTITY.md (Precedence, sections 1-13, Verifier checklist)"
+    },
+    {
       "rule_id": "PREC-0",
       "classification": "SPECIFIED",
-      "statement": "docs/33_AMENDMENT_001_COMPUTE_AND_LLM_PROVIDER.md (AMENDMENT-001, human-approved by Salim 2026-08-26) is the TOP of project-document precedence. It overrides README.md, docs 00-32 (including doc 24), and the combined file wherever they conflict with it: no A100 GPUs; local compute target is a single NVIDIA RTX 5090 workstation; no Azure OpenAI anywhere; agent reasoning uses frontier LLM APIs via a provider-agnostic client with configurable routing; 'GPT-5.4' mentions across the corpus (docs 04, 05, 07, 08, 09, 10, 11, 16, 17, 24, 26) are read as 'the configured frontier reasoning model, accessed via API' (vision fallback stays fallback-only); doc-25 Entra OIDC and doc-28 Azure Blob/Key Vault are NOT voided but flagged OPEN for the production phase with the documented self-hosted paths operative interim. Doc 24 remains the correction layer for everything the amendment does not address.",
+      "statement": "docs/33_AMENDMENT_001_COMPUTE_AND_LLM_PROVIDER.md (AMENDMENT-001, human-approved by Salim 2026-08-26) is at the top of project-document precedence together with AMENDMENT-002 (PREC-00; doc 34 wins over doc 33 where conflicting - no conflict is known). It overrides README.md, docs 00-32 (including doc 24), and the combined file wherever they conflict with it: no A100 GPUs; local compute target is a single NVIDIA RTX 5090 workstation; no Azure OpenAI anywhere; agent reasoning uses frontier LLM APIs via a provider-agnostic client with configurable routing; 'GPT-5.4' mentions across the corpus (docs 04, 05, 07, 08, 09, 10, 11, 16, 17, 24, 26) are read as 'the configured frontier reasoning model, accessed via API' (vision fallback stays fallback-only); doc-25 Entra OIDC and doc-28 Azure Blob/Key Vault are NOT voided but flagged OPEN for the production phase with the documented self-hosted paths operative interim. Doc 24 remains the correction layer for everything the amendments do not address.",
       "source": "docs/33_AMENDMENT_001_COMPUTE_AND_LLM_PROVIDER.md (Precedence, Corrections 1-4, Interpretation rules, Override map)"
     },
     {
       "rule_id": "PREC-1",
       "classification": "SPECIFIED",
-      "statement": "Subject to PREC-0, docs/24_FINAL_IMPLEMENTATION_CORRECTIONS.md OVERRIDES docs 00-23 wherever they conflict, until the earlier document is patched.",
+      "statement": "Subject to PREC-00 and PREC-0, docs/24_FINAL_IMPLEMENTATION_CORRECTIONS.md OVERRIDES docs 00-23 wherever they conflict, until the earlier document is patched.",
       "source": "docs/24_FINAL_IMPLEMENTATION_CORRECTIONS.md (Purpose); docs/00_MASTER_BUILD_CONTEXT.md (v3 implementation context); docs/README.md (v3 final reading rule); precedence over doc 24 per docs/33 (Precedence)"
     },
     {
@@ -49,6 +56,17 @@
   ],
   "documents": [
     {
+      "doc_id": "FA-DOC-34",
+      "path": "docs/34_AMENDMENT_002_SOURCE_IDENTITY.md",
+      "title": "AMENDMENT-002: Source Identity",
+      "version": "AMENDMENT-002",
+      "status": "HUMAN_APPROVED_AMENDMENT",
+      "precedence_tier": 1,
+      "sha256": "0edb5245999e88382eab1c8a0f9679f45e60d3cd680903f3b56f3a3768dd9b99",
+      "scope": "Human-approved authority record (Salim, 2026-08-27; resolves FATH-BOOTSTRAP-ESCALATION-001 / FATH-P3-001). Authoritative source-identity model, sections 1-13: source_registry single canonical source table (no sources table); source_id UUID PRIMARY KEY immutable; slug TEXT NOT NULL UNIQUE; universal semantic rule (source_id=UUID, slug/source_slug=readable, source_name=display); Pydantic source_id UUID + separate source_slug; all persisted source FKs to source_registry(source_id) (never slug absent human-approved ADR); doc-29 TEXT FK DDL superseded to UUID; YAML keys on slug; transport source_id strings are serialized UUIDs; UUID contracts (03/04/05/07/21) survive; textual identifiers (24/29/30) survive as slugs; mandatory full-corpus propagation sweep (section 12) and TASK-001 expected-schema oracle (section 13); 5-item verifier checklist. Sections 14-15 record owner control-plane directives (runtime audit note; flow resumption) executed by the controller outside this document.",
+      "relationships": ["overrides_where_conflicting: ALL earlier documents incl. FA-DOC-33, FA-DOC-24, FA-DOC-COMBINED", "resolves: FA-OPEN-021 (traceability), FATH-P3-001 (plan review attempt 3)", "supersedes_ddl_in: FA-DOC-29 (TEXT source FKs -> UUID to source_registry(source_id)), FA-DOC-24 section 1 (sources table -> source_registry)", "supersedes_yaml_key_in: FA-DOC-30 (source_id key -> slug)", "confirms_verbatim: UUID source contracts in FA-DOC-03/04/05/07/21", "propagation_map: .delivery/plans/FATH-BOOTSTRAP/PROPAGATION_MAP.md (navigation aid, not authority)"]
+    },
+    {
       "doc_id": "FA-DOC-33",
       "path": "docs/33_AMENDMENT_001_COMPUTE_AND_LLM_PROVIDER.md",
       "title": "AMENDMENT-001: Compute Platform and LLM Provider Correction",
@@ -57,7 +75,7 @@
       "precedence_tier": 1,
       "sha256": "3ea00519a4e7b79adb2e1f60afcfd4c393906033c148fd254fb1d71e15c61589",
       "scope": "Human-approved authority record (Salim, 2026-08-26). Voids all A100 references (no 8xA100 VM); sets local compute target to a single RTX 5090 workstation; voids all Azure OpenAI references; mandates provider-agnostic frontier-LLM API client with configurable routing; reverses doc-02 'no extra frontier LLMs'; interpretation rules for 'GPT-5.4' mentions; flags doc-25 Entra OIDC and doc-28 Azure Blob/Key Vault OPEN for production phase; 5-item verifier checklist.",
-      "relationships": ["overrides_where_conflicting: FA-DOC-README, FA-DOC-00..FA-DOC-32, FA-DOC-COMBINED", "leaves_as_correction_layer: FA-DOC-24 (for everything not addressed by the amendment)", "flags_open: FA-DOC-25 (production auth provider), FA-DOC-28 (production secrets/object-store hosting)"]
+      "relationships": ["overrides_where_conflicting: FA-DOC-README, FA-DOC-00..FA-DOC-32, FA-DOC-COMBINED", "overridden_where_conflicting_by: FA-DOC-34 (no known conflict - different domains)", "leaves_as_correction_layer: FA-DOC-24 (for everything not addressed by the amendments)", "flags_open: FA-DOC-25 (production auth provider), FA-DOC-28 (production secrets/object-store hosting)"]
     },
     {
       "doc_id": "FA-DOC-00",
@@ -101,7 +119,7 @@
       "precedence_tier": 5,
       "sha256": "b4f6f54f10ba5d648fa26b4b2edb680dceab6a108068e9ee843324c0ae4f776b",
       "scope": "SourceRegistryRecord and AccessDecision Pydantic contracts, Access Guard rules, 16 initial registry seeds, indices.",
-      "relationships": ["overridden_where_conflicting_by: FA-DOC-24 (Week-1 statuses, source status enum)", "extended_by: FA-DOC-29, FA-DOC-30", "known_deltas_with: FA-DOC-29/FA-DOC-30 (source identifier UUID vs TEXT; seed values incomplete — recorded FA-OPEN-020/021 in traceability)"]
+      "relationships": ["overridden_where_conflicting_by: FA-DOC-34 (identity model - doc-03 UUID source_id survives verbatim per its section 10; slug column added per section 3), FA-DOC-24 (Week-1 statuses, source status enum)", "extended_by: FA-DOC-29, FA-DOC-30", "identity_delta_with_29_30: RESOLVED_BY_AMENDMENT_002 (FA-OPEN-021 closed; docs/34 sections 7, 11)", "seed_values_incomplete: FA-OPEN-020 remains OPEN (Salim; base URLs, tiers, rate limits, collection modes not established by authority)"]
     },
     {
       "doc_id": "FA-DOC-04",
@@ -134,7 +152,7 @@
       "precedence_tier": 5,
       "sha256": "13ad1b5b4dc15cd94f070da7ad069103de2867b79262fcc8f981bcb5807a6c79",
       "scope": "Redis Streams decision, delivery semantics, stream names, EventEnvelope, event type catalog, payload schemas, idempotency, DLQ, audit integration, tests.",
-      "relationships": ["overridden_where_conflicting_by: FA-DOC-24 (RawArchiveAddedPayload fields)"]
+      "relationships": ["overridden_where_conflicting_by: FA-DOC-24 (RawArchiveAddedPayload fields)", "payload_identity_semantics_fixed_by: FA-DOC-34 section 9 (source_id:str payload fields carry serialized UUIDs, never slugs; readable ids travel as source_slug)"]
     },
     {
       "doc_id": "FA-DOC-07",
@@ -145,7 +163,7 @@
       "precedence_tier": 5,
       "sha256": "5e9448bbdaf6387fe1db5c48f753a984295a2023706d1348bc05c9af149a585e",
       "scope": "Controlled generative UI rules, first-screen rule, ComponentType registry, component prop models, TypeScript interfaces, orchestrator rules, v0 layout, rejection behavior.",
-      "relationships": ["overridden_where_conflicting_by: FA-DOC-24 (ComponentName registry; RawArchiveRecordCard first-class)"]
+      "relationships": ["overridden_where_conflicting_by: FA-DOC-24 (ComponentName registry; RawArchiveRecordCard first-class)", "identity_semantics_confirmed_by: FA-DOC-34 sections 9-10 (Python source_id: UUID props survive; TypeScript source_id: string = serialized UUID, never slug)"]
     },
     {
       "doc_id": "FA-DOC-08",
@@ -332,7 +350,7 @@
       "precedence_tier": 2,
       "sha256": "d4ca43c6a63d69e2bf09508548515725bac471c45f5869d4e4fda1e8649220c6",
       "scope": "Overrides docs 00-23 where conflicting: Week-1 source set, source status enum, raw-archive session duplicate guard, FactStatus with quarantined from first fact migration, Canvas registry incl. RawArchiveRecordCard, RawArchiveAddedPayload fields, ARTICLE_PART_OF_LAW and FDI_TARGETS_COUNTRY edges, UntrustedBlob immutability + delimiter escaping, audit write pattern, Sanad EvidenceBundle, template-only simulation, budget reserve/refund, backend-RBAC approvals. Verifier checklist (10).",
-      "relationships": ["overrides: FA-DOC-00..FA-DOC-23 (subject to FA-DOC-33)", "overridden_where_conflicting_by: FA-DOC-33 (GPT-5.4 references reinterpreted per its rule 1)", "defers_to: FA-DOC-25 (full RBAC implementation)"]
+      "relationships": ["overrides: FA-DOC-00..FA-DOC-23 (subject to FA-DOC-34 and FA-DOC-33)", "overridden_where_conflicting_by: FA-DOC-34 (its section-1 'sources' table DDL maps to source_registry; its Week-1 textual sets are slugs; its payload source_id:str fields are serialized UUIDs - docs/34 sections 1, 9, 11), FA-DOC-33 (GPT-5.4 references reinterpreted per its rule 1)", "defers_to: FA-DOC-25 (full RBAC implementation)"]
     },
     {
       "doc_id": "FA-DOC-25",
@@ -387,7 +405,7 @@
       "precedence_tier": 4,
       "sha256": "74731553d6d56b106e33e899203d658e77f68bc06a9ea422b850ad4aa1832313",
       "scope": "Phase-1 data rules, source onboarding lifecycle and checklist, collection modes, PII avoidance, legal corpus handling, paid subscription policy, source risk scoring, terms-change monitoring.",
-      "relationships": ["mandatory_for_domain: source onboarding", "extends: FA-DOC-03"]
+      "relationships": ["mandatory_for_domain: source onboarding", "extends: FA-DOC-03", "ddl_superseded_by: FA-DOC-34 section 7 (source_id TEXT REFERENCES sources(id) -> source_id UUID REFERENCES source_registry(source_id)); its textual identifiers survive as slugs (section 11); its Pydantic source_id:str fields carry UUID identity with separate source_slug where needed (sections 4-5)"]
     },
     {
       "doc_id": "FA-DOC-30",
@@ -398,7 +416,7 @@
       "precedence_tier": 4,
       "sha256": "1768ee8b4c526df1d9d786c6fc3c3f30ecf3d32d3aa2798467f9d6f909992e9a",
       "scope": "Priority tiers (Tier 0 = Week-1 active: qatar_open_data, world_bank, gdelt), Tier 1-3 backlog, candidate source YAML template, source-to-use-case map, portability pattern, activation order, source scoring.",
-      "relationships": ["mandatory_for_domain: source onboarding", "extends: FA-DOC-03"]
+      "relationships": ["mandatory_for_domain: source onboarding", "extends: FA-DOC-03", "yaml_key_superseded_by: FA-DOC-34 section 8 (template source_id: key -> slug:; UUID assigned at registry-record creation); its tier lists survive as slugs (section 11)"]
     },
     {
       "doc_id": "FA-DOC-31",
