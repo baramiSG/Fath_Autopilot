@@ -4,13 +4,13 @@
 **Project:** FATH_AUTOPILOT · **Task:** FATH-BOOTSTRAP · **Role:** CHIEF_ARCHITECT
 **Baseline commit:** `ae5a4ea7db30d9ba243e29c98424702f5e0fb7a1`
 
-> **WARNING.** This map assists future agents. It does not become architecture authority merely because it is convenient. The canonical documents under `docs/` (with `docs/34` AMENDMENT-002 and `docs/33` AMENDMENT-001 at the top of precedence — 34 wins over everything earlier where conflicting — then `docs/24` overriding 00–23 where they conflict) remain authoritative. At the plan-V4 state, the repository contains **only `docs/` and `.delivery/`** — everything under "Intended repository structure" is the doc-16 target state, not existing code.
+> **WARNING.** This map assists future agents. It does not become architecture authority merely because it is convenient. The canonical documents under `docs/` (with `docs/34` AMENDMENT-002 and `docs/33` AMENDMENT-001 at the top of precedence — 34 wins over everything earlier where conflicting — then `docs/24` overriding 00–23 where they conflict) remain authoritative. At the plan-V5 state, the repository contains **only `docs/` and `.delivery/`** — everything under "Intended repository structure" is the doc-16 target state, not existing code.
 
 ## 1. Current repository state (verified at baseline)
 
 ```text
 Fath_Autopilot/
-  docs/          35 canonical specification files (see AUTHORITY_MANIFEST.json)
+  docs/          36 canonical documents — 00–34 + README (see AUTHORITY_MANIFEST.json); the combined file is REFERENCE_ONLY and not counted
   .delivery/     delivery-governance artifacts (this planning package)
 ```
 
