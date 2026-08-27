@@ -1,7 +1,7 @@
 # AMENDMENT-002 Source-Identity Propagation Map (full-corpus sweep)
 
 **Artifact type:** Planning material — binding propagation map required by `docs/34_AMENDMENT_002_SOURCE_IDENTITY.md` §12. NOT new project authority: every row derives from the cited canonical text plus AMENDMENT-002; where they conflict, AMENDMENT-002 wins (docs/34 Precedence).
-**Project:** FATH_AUTOPILOT · **Scope:** FATH-BOOTSTRAP (plan V5) · **Role:** CHIEF_ARCHITECT / TASK_PLANNER (Claude Fable 5, 1M, Thinking ON, Max — inherited runtime)
+**Project:** FATH_AUTOPILOT · **Scope:** FATH-BOOTSTRAP (plan V6) · **Role:** CHIEF_ARCHITECT / TASK_PLANNER (Claude Fable 5, 1M, Thinking ON, Max — inherited runtime)
 **Row count:** 84 mapped rows (PM-A1..A6, B1..B5, C1..C7, D1..D15, E1..E6, F1..F3, G1..G6, H1..H4, I1..I2, J1..J8, K1..K5, L1..L5, M1..M5, N1..N7). Count corrected and provenance/graph surfaces added per FATH-V4-007/009.
 **Amendment:** docs/34, sha256 `0edb5245999e88382eab1c8a0f9679f45e60d3cd680903f3b56f3a3768dd9b99`, commit `af00923853e0234da403231258c822b949e9da00`, HUMAN-APPROVED (Salim, 2026-08-27).
 
@@ -180,7 +180,7 @@ Classification legend: **SPECIFIED** = the amendment (or surviving canonical tex
 
 ---
 
-## Consequences bound into plan V5
+## Consequences bound into plan V6 (established in V5; index-definition binding strengthened in V6 per FATH-V5-002)
 
 1. **TASK-001** creates `source_registry` exactly per PM-A1/B1/B2/B3/B4 with the complete expected schema pre-bound in TASK-001_PLAN §6.0, and its §13 oracle (A4) proves: UUID `source_id` PK **with immutability trigger + negative test**; `slug TEXT NOT NULL UNIQUE`; no `sources` table; FK count in `public` = 0 (positive assertion); exact pre-bound defaults/types/constraints/indexes; exact table set.
 2. **TASK-006** implements PM-C2/C3, PM-D10/D14, PM-M1–M5 (values still gated on FA-OPEN-020) **and the PM-B2 slug-stability enforcement obligation (trigger + audited-migration path + negative tests — FATH-V4-001)**.
