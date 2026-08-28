@@ -72,6 +72,36 @@ def test_running_interpreter_is_311() -> None:
     assert sys.version_info[:2] == (3, 11)
 
 
+def test_ci_a14_binds_uv_managed_python_before_bare_python_assert() -> None:
+    """A14 must not invoke the GitHub runner's default ``python``.
+
+    ``astral-sh/setup-uv`` with ``python-version: "3.11"`` sets ``UV_PYTHON`` but
+    does not replace PATH ``python``. GitHub ``ubuntu-latest`` currently ships
+    CPython 3.12 as ``python``; CI runs 33153025410 and 33153026521 failed with
+    ``AssertionError: 3.12.3`` on the bare ``python --version`` step.
+    """
+
+    text = (REPO_ROOT / ".github" / "workflows" / "ci.yml").read_text(encoding="utf-8")
+    marker = "Assert running interpreter is 3.11.x"
+    assert marker in text
+    start = text.index(marker)
+    rest = text[start:]
+    run_idx = rest.index("run:")
+    after_run = rest[run_idx:]
+    next_step = after_run.find("\n      - name:")
+    script = after_run if next_step == -1 else after_run[:next_step]
+    find_idx = script.find("uv python find")
+    version_idx = script.find("python --version")
+    assert find_idx != -1, "A14 must resolve uv-managed 3.11 before asserting python --version"
+    assert "--managed-python" in script
+    assert "3.11" in script
+    assert version_idx != -1
+    assert find_idx < version_idx
+    assert "sys.version_info[:2] == (3, 11)" in script
+    assert "PATH" in script
+    assert "GITHUB_PATH" in script
+
+
 def test_dependency_contract_names_and_versions() -> None:
     data = tomllib.loads((REPO_ROOT / "pyproject.toml").read_text(encoding="utf-8"))
     runtime = dict(_split_dep(item) for item in data["project"]["dependencies"])
