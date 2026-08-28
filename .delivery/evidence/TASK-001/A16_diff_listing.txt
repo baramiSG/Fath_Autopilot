@@ -1,5 +1,5 @@
 BASE_SHA=2649fb91b73c1d352bcd59a96cc9bf2e3dee27a9
-HEAD=9acd2c2489264d0ea94c129a33ad27ab63f98738
+HEAD=fa0b2a49416f5f885672ed48b21122a75d802a6a
 === git merge-base --is-ancestor ===
 ancestor_ok
 === git diff --name-status --no-renames BASE HEAD (committed candidate) ===
@@ -16,6 +16,8 @@ A	.delivery/evidence/TASK-001/A5_tree_check.txt
 A	.delivery/evidence/TASK-001/A8_amendment_001_scan.txt
 A	.delivery/evidence/TASK-001/A9_gitleaks.txt
 A	.delivery/evidence/TASK-001/BASE_SHA.txt
+A	.delivery/evidence/TASK-001/CI-9acd2c248926_ADJUDICATION.md
+A	.delivery/evidence/TASK-001/FATH-IMPL-009_ADJUDICATION.md
 A	.delivery/evidence/TASK-001/PIN_RESOLUTION.txt
 A	.delivery/evidence/TASK-001/REMEDIATION-1_ADJUDICATION.md
 A	.delivery/evidence/TASK-001/REMEDIATION-2_ADJUDICATION.md
@@ -105,5 +107,4 @@ M	.delivery/evidence/TASK-001/pytest_session.txt
 M	.github/workflows/ci.yml
 M	src/fath/tests/unit/test_dependency_contract.py
 === untracked exclude-standard ===
-.delivery/evidence/TASK-001/CI-9acd2c248926_ADJUDICATION.md
-.delivery/evidence/TASK-001/FATH-IMPL-009_ADJUDICATION.md
+.delivery/evidence/TASK-001/CI-fa0b2a49416f_ADJUDICATION.md

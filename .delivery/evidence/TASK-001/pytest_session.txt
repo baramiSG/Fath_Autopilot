@@ -104,4 +104,4 @@ src/fath/tests/unit/test_source_registry_contract.py::test_strategic_relevance_r
 src/fath/tests/unit/test_source_registry_contract.py::test_conint_accepts_zero PASSED [ 98%]
 src/fath/tests/unit/test_source_registry_contract.py::test_conint_rejects_negative PASSED [100%]
 
-============================== 95 passed in 0.55s ==============================
+============================== 95 passed in 0.40s ==============================

@@ -76,9 +76,11 @@ def test_ci_a14_binds_uv_managed_python_before_bare_python_assert() -> None:
     """A14 must not invoke the GitHub runner's default ``python``.
 
     ``astral-sh/setup-uv`` with ``python-version: "3.11"`` sets ``UV_PYTHON`` but
-    does not replace PATH ``python``. GitHub ``ubuntu-latest`` currently ships
-    CPython 3.12 as ``python``; CI runs 33153025410 and 33153026521 failed with
-    ``AssertionError: 3.12.3`` on the bare ``python --version`` step.
+    does not replace PATH ``python`` and does not populate a managed install that
+    ``uv python find`` can see. GitHub ``ubuntu-latest`` ships CPython 3.12 as
+    ``python`` (CI-9acd2c248926: ``AssertionError: 3.12.3``). ``uv python find
+    --managed-python 3.11`` on a clean runner with no project venv fails
+    (CI-fa0b2a49416f: ``No interpreter found for Python 3.11``, exit 2).
     """
 
     text = (REPO_ROOT / ".github" / "workflows" / "ci.yml").read_text(encoding="utf-8")
@@ -90,9 +92,12 @@ def test_ci_a14_binds_uv_managed_python_before_bare_python_assert() -> None:
     after_run = rest[run_idx:]
     next_step = after_run.find("\n      - name:")
     script = after_run if next_step == -1 else after_run[:next_step]
+    install_idx = script.find("uv python install")
     find_idx = script.find("uv python find")
     version_idx = script.find("python --version")
+    assert install_idx != -1, "A14 must install uv-managed 3.11; find does not download"
     assert find_idx != -1, "A14 must resolve uv-managed 3.11 before asserting python --version"
+    assert install_idx < find_idx
     assert "--managed-python" in script
     assert "3.11" in script
     assert version_idx != -1

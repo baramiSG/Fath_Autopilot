@@ -32,8 +32,10 @@ jobs:
       - name: Assert running interpreter is 3.11.x
         run: |
           set -euo pipefail
-          # setup-uv sets UV_PYTHON=3.11 but does not replace PATH `python`.
-          # ubuntu-latest's `python` is currently 3.12.x (CI-9acd2c248926).
+          # setup-uv sets UV_PYTHON=3.11 but does not replace PATH `python`
+          # and does not populate a managed CPython 3.11 install on a clean
+          # runner (CI-9acd2c248926, CI-fa0b2a49416f). Install, then resolve.
+          uv python install --managed-python --no-bin 3.11
           PY="$(uv python find --no-project --managed-python 3.11)"
           BIN="$(dirname "${PY}")"
           echo "uv-managed python: ${PY}"
