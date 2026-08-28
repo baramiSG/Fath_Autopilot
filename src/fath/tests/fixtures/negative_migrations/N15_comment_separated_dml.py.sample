@@ -1,0 +1,11 @@
+# SYNTHETIC-TEST-FIXTURE
+"""N15: comment-separated DML keywords (INSERT/**/INTO, DELETE/**/FROM)."""
+from alembic import op
+
+op.execute(
+    """
+    CREATE TABLE synthetic_comment_dml (id int);
+    INSERT/**/INTO synthetic_comment_dml VALUES (1);
+    DELETE/**/FROM synthetic_comment_dml;
+    """
+)

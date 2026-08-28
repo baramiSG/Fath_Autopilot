@@ -1,0 +1,8 @@
+# SYNTHETIC-TEST-FIXTURE
+"""N11: callable alias of op.execute plus replace-assembled DML."""
+from alembic import op
+
+
+def upgrade() -> None:
+    run = op.execute
+    run("XNSERT INTO synthetic_t VALUES (1)".replace("X", "I"))

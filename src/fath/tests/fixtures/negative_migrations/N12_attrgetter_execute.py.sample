@@ -1,0 +1,9 @@
+# SYNTHETIC-TEST-FIXTURE
+"""N12: operator.attrgetter execution indirection plus replace-assembled DML."""
+import operator
+
+from alembic import op
+
+
+def upgrade() -> None:
+    operator.attrgetter("execute")(op)("XNSERT INTO synthetic_t VALUES (1)".replace("X", "I"))

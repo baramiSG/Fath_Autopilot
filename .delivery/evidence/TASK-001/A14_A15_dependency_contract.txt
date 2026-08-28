@@ -1,0 +1,21 @@
+=== uv lock --check ===
+Resolved 34 packages in 0.61ms
+=== A15 dependency contract ===
+warning: `VIRTUAL_ENV=/home/barami/projects/salim-autonomous-build/.venv` does not match the project environment path `.venv` and will be ignored; use `--active` to target the active environment instead
+============================= test session starts ==============================
+platform linux -- Python 3.11.15, pytest-9.1.1, pluggy-1.6.0 -- /home/barami/projects/Fath_Autopilot/.venv/bin/python
+cachedir: .pytest_cache
+rootdir: /home/barami/projects/Fath_Autopilot
+configfile: pyproject.toml
+plugins: asyncio-1.4.0
+asyncio: mode=Mode.AUTO, debug=False, asyncio_default_fixture_loop_scope=session, asyncio_default_test_loop_scope=function
+collecting ... collected 6 items
+
+src/fath/tests/unit/test_dependency_contract.py::test_mypy_config_does_not_exclude_tests PASSED [ 16%]
+src/fath/tests/unit/test_dependency_contract.py::test_requires_python_is_311_band PASSED [ 33%]
+src/fath/tests/unit/test_dependency_contract.py::test_running_interpreter_is_311 PASSED [ 50%]
+src/fath/tests/unit/test_dependency_contract.py::test_ci_a14_binds_uv_managed_python_before_bare_python_assert PASSED [ 66%]
+src/fath/tests/unit/test_dependency_contract.py::test_dependency_contract_names_and_versions PASSED [ 83%]
+src/fath/tests/unit/test_dependency_contract.py::test_prohibited_names_absent_from_pyproject_and_lock PASSED [100%]
+
+============================== 6 passed in 0.02s ===============================

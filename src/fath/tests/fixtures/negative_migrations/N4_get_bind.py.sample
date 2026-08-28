@@ -1,0 +1,6 @@
+# SYNTHETIC-TEST-FIXTURE
+"""N4: op.get_bind then execute."""
+from alembic import op
+
+conn = op.get_bind()
+conn.execute("INSERT INTO synthetic_t (value) VALUES (1)")

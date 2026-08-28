@@ -1,0 +1,11 @@
+# SYNTHETIC-TEST-FIXTURE
+"""N18: UPDATE ONLY ... SET on a schema-qualified table, hidden behind a DDL prefix
+(the reviewer-demonstrated form the UPDATE\\s+\\w+\\s+SET regex missed)."""
+from alembic import op
+
+op.execute(
+    """
+    CREATE TABLE synthetic_update_probe (id int, label text);
+    UPDATE ONLY public.synthetic_update_probe SET label = 'synthetic' WHERE id = 1;
+    """
+)

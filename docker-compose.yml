@@ -1,0 +1,39 @@
+services:
+  postgres:
+    build:
+      context: ./docker/postgres
+      dockerfile: Dockerfile
+    image: fath-postgres:16-age-pgvector
+    environment:
+      POSTGRES_USER: fath
+      POSTGRES_PASSWORD: fath
+      POSTGRES_DB: fath
+    ports:
+      - "55432:5432"
+    volumes:
+      - fath_postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U fath -d fath"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+      start_period: 10s
+
+  redis:
+    # Official library redis:7.4.11 — index digest from
+    # `docker buildx imagetools inspect redis:7.4.11` on 2026-08-27
+    # (org.opencontainers.image.version=7.4.11).
+    image: redis:7.4.11@sha256:71da9275c5f3fcb97d0fa0c8c5b36cc995327265420f17a04bfd544f458059f7
+    ports:
+      - "56379:6379"
+    volumes:
+      - fath_redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+volumes:
+  fath_postgres_data:
+  fath_redis_data:

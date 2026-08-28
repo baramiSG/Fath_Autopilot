@@ -1,0 +1,5 @@
+# SYNTHETIC-TEST-FIXTURE
+"""N3: op.execute of an INSERT string."""
+from alembic import op
+
+op.execute("INSERT INTO synthetic_t (value) VALUES (1)")

@@ -1,0 +1,9 @@
+# SYNTHETIC-TEST-FIXTURE
+"""N13: DML verb assembled with str.replace, then executed via an aliased sink."""
+from alembic import op
+
+
+def upgrade() -> None:
+    sql = "XNSERT INTO synthetic_t VALUES (1)".replace("X", "I")
+    helper = op.execute
+    helper(sql)

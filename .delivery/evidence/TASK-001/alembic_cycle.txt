@@ -1,0 +1,14 @@
+=== alembic downgrade base / upgrade head ===
+INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
+INFO  [alembic.runtime.migration] Will assume transactional DDL.
+INFO  [alembic.runtime.migration] Running downgrade 0001 -> , Migration 0001 — source_registry schema (DDL only, zero DML).
+INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
+INFO  [alembic.runtime.migration] Will assume transactional DDL.
+INFO  [alembic.runtime.migration] Running upgrade  -> 0001, Migration 0001 — source_registry schema (DDL only, zero DML).
+# A12c
+A12c source_registry_count 0
+tables ['alembic_version', 'source_registry']
+exts ['age', 'plpgsql', 'uuid-ossp', 'vector']
+version 160015
+redis_version 7.4.11
+postgres_server_version_num 160015

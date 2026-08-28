@@ -1,0 +1,152 @@
+{
+  "table_set": ["alembic_version", "source_registry"],
+  "extensions": ["uuid-ossp", "vector", "age"],
+  "fk_count_public": 0,
+  "columns": [
+    {"name": "source_id", "type": "uuid", "not_null": true, "default": "uuid_generate_v4()"},
+    {"name": "slug", "type": "text", "not_null": true, "default": null},
+    {"name": "name", "type": "text", "not_null": true, "default": null},
+    {"name": "source_class", "type": "text", "not_null": true, "default": null},
+    {"name": "reliability_tier", "type": "text", "not_null": true, "default": null},
+    {"name": "base_url", "type": "text", "not_null": true, "default": null},
+    {"name": "api_base_url", "type": "text", "not_null": false, "default": null},
+    {"name": "robots_url", "type": "text", "not_null": false, "default": null},
+    {"name": "terms_url", "type": "text", "not_null": false, "default": null},
+    {"name": "access_method", "type": "text", "not_null": true, "default": null},
+    {"name": "auth_requirement", "type": "text", "not_null": true, "default": null},
+    {"name": "subscription_name", "type": "text", "not_null": false, "default": null},
+    {"name": "allowed_paths", "type": "text[]", "not_null": true, "default": null},
+    {"name": "disallowed_paths", "type": "text[]", "not_null": true, "default": null},
+    {"name": "robots_status", "type": "text", "not_null": true, "default": null},
+    {"name": "max_requests_per_minute", "type": "integer", "not_null": true, "default": null},
+    {"name": "max_pages_per_cycle", "type": "integer", "not_null": true, "default": null},
+    {"name": "max_bytes_per_cycle", "type": "bigint", "not_null": true, "default": null},
+    {"name": "language_codes", "type": "text[]", "not_null": true, "default": null},
+    {"name": "country_scope", "type": "text[]", "not_null": true, "default": null},
+    {"name": "topic_scope", "type": "text[]", "not_null": true, "default": null},
+    {"name": "update_frequency_hint", "type": "text", "not_null": true, "default": null},
+    {"name": "independence_group", "type": "text", "not_null": false, "default": null},
+    {"name": "reliability_prior", "type": "double precision", "not_null": true, "default": null},
+    {"name": "strategic_relevance_score", "type": "double precision", "not_null": true, "default": null},
+    {"name": "data_quality_notes", "type": "text", "not_null": false, "default": null},
+    {"name": "legal_notes", "type": "text", "not_null": false, "default": null},
+    {"name": "enabled", "type": "boolean", "not_null": true, "default": null},
+    {"name": "last_access_review_at", "type": "timestamptz", "not_null": false, "default": null},
+    {"name": "created_at", "type": "timestamptz", "not_null": true, "default": null},
+    {"name": "updated_at", "type": "timestamptz", "not_null": true, "default": null},
+    {"name": "metadata", "type": "jsonb", "not_null": true, "default": null},
+    {"name": "status", "type": "text", "not_null": true, "default": "'candidate'::text"}
+  ],
+  "constraints": [
+    {"name": "source_registry_pkey", "contype": "p", "columns": ["source_id"]},
+    {"name": "source_registry_slug_key", "contype": "u", "columns": ["slug"]},
+    {
+      "name": "ck_source_registry_status",
+      "contype": "c",
+      "columns": ["status"],
+      "values": [
+        "candidate",
+        "candidate_manual_review",
+        "approved_inactive",
+        "active",
+        "suspended",
+        "quarantined",
+        "retired"
+      ]
+    },
+    {
+      "name": "ck_source_registry_source_class",
+      "contype": "c",
+      "columns": ["source_class"],
+      "values": [
+        "government_open_data",
+        "legal_corpus",
+        "global_indicator",
+        "trade_data",
+        "financial_disclosure",
+        "investment_signal",
+        "news_event",
+        "benchmark_country",
+        "report_library"
+      ]
+    },
+    {
+      "name": "ck_source_registry_reliability_tier",
+      "contype": "c",
+      "columns": ["reliability_tier"],
+      "values": ["primary", "official_secondary", "institutional", "media", "low_confidence"]
+    },
+    {
+      "name": "ck_source_registry_access_method",
+      "contype": "c",
+      "columns": ["access_method"],
+      "values": [
+        "api",
+        "bulk_download",
+        "rss",
+        "sitemap",
+        "polite_crawl",
+        "manual_ingestion",
+        "disabled"
+      ]
+    },
+    {
+      "name": "ck_source_registry_auth_requirement",
+      "contype": "c",
+      "columns": ["auth_requirement"],
+      "values": ["none", "api_key", "paid_subscription", "login_required", "not_allowed"]
+    },
+    {
+      "name": "ck_source_registry_robots_status",
+      "contype": "c",
+      "columns": ["robots_status"],
+      "values": ["allowed", "disallowed", "partial", "not_applicable", "unknown"]
+    },
+    {
+      "name": "ck_source_registry_max_requests_per_minute",
+      "contype": "c",
+      "columns": ["max_requests_per_minute"],
+      "numeric": {"column": "max_requests_per_minute", "ge": 0}
+    },
+    {
+      "name": "ck_source_registry_max_pages_per_cycle",
+      "contype": "c",
+      "columns": ["max_pages_per_cycle"],
+      "numeric": {"column": "max_pages_per_cycle", "ge": 0}
+    },
+    {
+      "name": "ck_source_registry_max_bytes_per_cycle",
+      "contype": "c",
+      "columns": ["max_bytes_per_cycle"],
+      "numeric": {"column": "max_bytes_per_cycle", "ge": 0}
+    },
+    {
+      "name": "ck_source_registry_reliability_prior",
+      "contype": "c",
+      "columns": ["reliability_prior"],
+      "numeric": {"column": "reliability_prior", "ge": 0, "le": 1}
+    },
+    {
+      "name": "ck_source_registry_strategic_relevance_score",
+      "contype": "c",
+      "columns": ["strategic_relevance_score"],
+      "numeric": {"column": "strategic_relevance_score", "ge": 0, "le": 1}
+    }
+  ],
+  "indexes": [
+    "CREATE UNIQUE INDEX source_registry_pkey ON public.source_registry USING btree (source_id)",
+    "CREATE UNIQUE INDEX source_registry_slug_key ON public.source_registry USING btree (slug)",
+    "CREATE INDEX idx_sources_enabled ON public.source_registry USING btree (enabled)",
+    "CREATE INDEX idx_sources_class ON public.source_registry USING btree (source_class)",
+    "CREATE INDEX idx_sources_reliability ON public.source_registry USING btree (reliability_tier)",
+    "CREATE INDEX idx_sources_independence_group ON public.source_registry USING btree (independence_group)"
+  ],
+  "trigger": {
+    "name": "trg_source_registry_source_id_immutable",
+    "function": "fath_source_id_immutable",
+    "timing": "BEFORE",
+    "event": "UPDATE",
+    "level": "ROW",
+    "enabled": true
+  }
+}

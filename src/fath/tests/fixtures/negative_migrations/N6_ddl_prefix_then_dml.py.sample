@@ -1,0 +1,5 @@
+# SYNTHETIC-TEST-FIXTURE
+"""N6: DML appended after a DDL prefix in one op.execute string."""
+from alembic import op
+
+op.execute("CREATE TABLE synthetic_t (id int); INSERT INTO synthetic_t VALUES (1)")

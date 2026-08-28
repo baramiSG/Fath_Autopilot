@@ -1,0 +1,7 @@
+# SYNTHETIC-TEST-FIXTURE
+"""N2: op.bulk_insert."""
+from alembic import op
+import sqlalchemy as sa
+
+t = sa.table("synthetic_t", sa.column("value"))
+op.bulk_insert(t, [{"value": 1}])

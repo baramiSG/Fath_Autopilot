@@ -1,0 +1,17 @@
+# SYNTHETIC-TEST-FIXTURE
+"""N14: unrecognised connection.execute sink in env.py-shaped code plus replace DML."""
+from alembic import context
+from sqlalchemy import engine_from_config, pool
+
+
+def run_migrations_online() -> None:
+    connectable = engine_from_config(
+        context.config.get_section(context.config.config_ini_section, {}),
+        prefix="sqlalchemy.",
+        poolclass=pool.NullPool,
+    )
+    with connectable.connect() as connection:
+        connection.execute("XNSERT INTO synthetic_t VALUES (1)".replace("X", "I"))
+        context.configure(connection=connection)
+        with context.begin_transaction():
+            context.run_migrations()

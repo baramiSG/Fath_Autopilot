@@ -1,0 +1,16 @@
+# SYNTHETIC-TEST-FIXTURE
+"""N16: PL/pgSQL dynamically assembled DML via EXECUTE of concatenated literals."""
+from alembic import op
+
+op.execute(
+    """
+    CREATE FUNCTION synthetic_dyn_dml() RETURNS void
+    LANGUAGE plpgsql
+    AS $fn$
+    BEGIN
+        EXECUTE 'INSERT' || ' INTO synthetic_dyn_dml_t VALUES (1)';
+        EXECUTE 'DELETE' || ' FROM synthetic_dyn_dml_t';
+    END;
+    $fn$;
+    """
+)

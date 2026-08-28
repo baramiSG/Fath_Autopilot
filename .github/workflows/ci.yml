@@ -1,0 +1,172 @@
+name: ci
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+env:
+  DATABASE_URL: postgresql+asyncpg://fath:fath@127.0.0.1:55432/fath
+  REDIS_URL: redis://127.0.0.1:56379/0
+  FATH_ENV: ci
+  GITLEAKS_VERSION: "8.30.1"
+  GITLEAKS_TARBALL_SHA256: "551f6fc83ea457d62a0d98237cbad105af8d557003051f41f3e7ca7b3f2470eb"
+  GITLEAKS_BINARY_SHA256: "88f91962aa2f93ac6ab281d553b9e125f5197bbbce38f9f2437f7299c32e5509"
+
+jobs:
+  sha-bound-evidence:
+    runs-on: ubuntu-latest
+    steps:
+      - name: "1. Checkout candidate with full history and assert Python 3.11"
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+
+      - name: Install uv and Python 3.11
+        uses: astral-sh/setup-uv@20cfd1bf945f4377ade1205e4dbc17946fc9a30d # v10.0.1
+        with:
+          python-version: "3.11"
+
+      - name: Assert running interpreter is 3.11.x
+        run: |
+          set -euo pipefail
+          # setup-uv sets UV_PYTHON=3.11 but does not replace PATH `python`
+          # and does not populate a managed CPython 3.11 install on a clean
+          # runner (CI-9acd2c248926, CI-fa0b2a49416f). Install, then resolve.
+          uv python install --managed-python --no-bin 3.11
+          PY="$(uv python find --no-project --managed-python 3.11)"
+          BIN="$(dirname "${PY}")"
+          echo "uv-managed python: ${PY}"
+          test -x "${BIN}/python"
+          export PATH="${BIN}:${PATH}"
+          hash -r
+          command -v python
+          python --version
+          python -c "import sys; assert sys.version_info[:2] == (3, 11), sys.version"
+          echo "${BIN}" >> "${GITHUB_PATH}"
+
+      - name: "2. uv lock --check, uv sync --locked, A15 dependency contract"
+        run: |
+          uv lock --check
+          uv sync --locked
+          uv run pytest src/fath/tests/unit/test_dependency_contract.py -q
+
+      - name: "3. ruff check + format --check; mypy src/"
+        run: |
+          uv run ruff check src
+          uv run ruff format --check src
+          uv run mypy src/
+
+      - name: "4. A16 diff-boundary against governed BASE_SHA"
+        run: |
+          set -euo pipefail
+          BASE=$(tr -d '[:space:]' < .delivery/evidence/TASK-001/BASE_SHA.txt)
+          echo "$BASE" | grep -Eq '^[0-9a-f]{40}$'
+          git merge-base --is-ancestor "$BASE" HEAD
+          fail=0
+          while IFS=$'\t' read -r status path; do
+            [ -z "${path:-}" ] && continue
+            case "$path" in
+              docs|docs/*)
+                echo "A16 FAIL docs path: $status $path"
+                fail=1
+                ;;
+            esac
+            case "$path" in
+              .delivery|.delivery/*)
+                if [ "$status" != "A" ] || [[ ! "$path" =~ ^\.delivery/evidence/TASK-001/ ]]; then
+                  echo "A16 FAIL .delivery path: $status $path"
+                  fail=1
+                fi
+                ;;
+            esac
+          done < <(git diff --name-status --no-renames "$BASE" HEAD)
+          test "$fail" -eq 0
+
+      - name: "5. Build pinned Postgres image; start services; running-version checks"
+        run: |
+          set -euo pipefail
+          docker compose build postgres
+          docker compose up -d --wait
+          uv run python - <<'PY'
+          import os
+          import psycopg
+          import redis
+          url = os.environ["DATABASE_URL"].replace("postgresql+asyncpg://", "postgresql://", 1)
+          with psycopg.connect(url) as conn:
+              version = conn.execute("SELECT current_setting('server_version_num')::int").fetchone()[0]
+              assert 160000 <= version < 170000, version
+              print("postgres_server_version_num", version)
+          client = redis.Redis.from_url(os.environ["REDIS_URL"])
+          info = client.info("server")
+          major = str(info["redis_version"]).split(".", 1)[0]
+          assert major == "7", info["redis_version"]
+          print("redis_version", info["redis_version"])
+          client.close()
+          PY
+
+      - name: "6. alembic upgrade head and A12a zero-row check"
+        run: |
+          set -euo pipefail
+          uv run alembic upgrade head
+          uv run python - <<'PY'
+          import os
+          import psycopg
+          url = os.environ["DATABASE_URL"].replace("postgresql+asyncpg://", "postgresql://", 1)
+          with psycopg.connect(url) as conn:
+              n = conn.execute("SELECT COUNT(*) FROM source_registry").fetchone()[0]
+              assert n == 0, n
+              print("A12a source_registry_count", n)
+          PY
+
+      - name: "7. A4 expected-schema comparison and A11 functional extension checks"
+        run: |
+          uv run pytest src/fath/tests/integration/test_schema_oracle.py::test_a4_expected_schema src/fath/tests/integration/test_extensions.py -q
+
+      - name: "8. pytest unit+integration and A12b zero-row check"
+        run: |
+          set -euo pipefail
+          uv run pytest
+          uv run python - <<'PY'
+          import os
+          import psycopg
+          url = os.environ["DATABASE_URL"].replace("postgresql+asyncpg://", "postgresql://", 1)
+          with psycopg.connect(url) as conn:
+              n = conn.execute("SELECT COUNT(*) FROM source_registry").fetchone()[0]
+              assert n == 0, n
+              print("A12b source_registry_count", n)
+          PY
+
+      - name: "9. alembic downgrade/upgrade cycle and A12c zero-row check"
+        run: |
+          set -euo pipefail
+          uv run alembic downgrade base
+          uv run alembic upgrade head
+          uv run python - <<'PY'
+          import os
+          import psycopg
+          url = os.environ["DATABASE_URL"].replace("postgresql+asyncpg://", "postgresql://", 1)
+          with psycopg.connect(url) as conn:
+              n = conn.execute("SELECT COUNT(*) FROM source_registry").fetchone()[0]
+              assert n == 0, n
+              print("A12c source_registry_count", n)
+          PY
+
+      - name: "10. A5 tree, A13 scans, explicit migration DML detector"
+        run: |
+          uv run pytest src/fath/tests/unit/test_expected_tree.py src/fath/tests/unit/test_a13_scans.py src/fath/tests/unit/test_migration_dml_discipline.py src/fath/tests/unit/test_diff_boundary.py -q
+
+      - name: "11. A8 AMENDMENT-001 scan and checksum-pinned gitleaks"
+        run: |
+          set -euo pipefail
+          uv run pytest src/fath/tests/unit/test_a13_scans.py::test_a8_amendment_001_scan -q
+          curl -sSL -o /tmp/gitleaks.tar.gz \
+            "https://github.com/gitleaks/gitleaks/releases/download/v${GITLEAKS_VERSION}/gitleaks_${GITLEAKS_VERSION}_linux_x64.tar.gz"
+          echo "${GITLEAKS_TARBALL_SHA256}  /tmp/gitleaks.tar.gz" | sha256sum -c -
+          mkdir -p /tmp/gitleaks
+          tar -xzf /tmp/gitleaks.tar.gz -C /tmp/gitleaks
+          echo "${GITLEAKS_BINARY_SHA256}  /tmp/gitleaks/gitleaks" | sha256sum -c -
+          /tmp/gitleaks/gitleaks version
+          /tmp/gitleaks/gitleaks detect --source . --no-banner --redact

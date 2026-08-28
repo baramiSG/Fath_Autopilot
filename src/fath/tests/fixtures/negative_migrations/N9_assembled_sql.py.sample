@@ -1,0 +1,8 @@
+# SYNTHETIC-TEST-FIXTURE
+"""N9: DML verb and INTO assembled from separate literals."""
+from alembic import op
+
+verb = "INSERT"
+tail = " INTO synthetic_t VALUES (1)"
+op.execute(verb + tail)
+op.execute(f"{verb} INTO synthetic_t VALUES (2)")

@@ -1,0 +1,8 @@
+uv uv 0.11.31 (x86_64-unknown-linux-gnu)
+Python Python 3.11.15
+Docker version 29.7.2, build a7dcaa6
+Docker Compose version v5.4.0
+git version 2.53.0
+ruff 0.16.4
+mypy 2.3.1 (compiled: yes)
+pytest 9.1.1
