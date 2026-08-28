@@ -1,0 +1,41 @@
+Pins resolved 2026-08-27 from authoritative sources (this workstation, linux/amd64).
+
+Postgres 16 base image
+  tag: postgres:16
+  index digest: sha256:f1c3376c26f2609ab9f29f71f824103fe2fcd8ee0346485cb6122a4f93df6f94
+  linux/amd64 manifest: sha256:485935f94cc7165afa896978809c37b592dc07f0a37d2c8f645f12412d0212c8
+  OCI version annotation: 16.15
+  source: docker buildx imagetools inspect postgres:16
+  Dockerfile FROM uses the index digest.
+
+Redis 7
+  tag: redis:7.4.11
+  index digest: sha256:71da9275c5f3fcb97d0fa0c8c5b36cc995327265420f17a04bfd544f458059f7
+  linux/amd64 manifest: sha256:e2debfb7956fa12c7ddc79d7e645c8cf26b30c99a6e9161ea9bf4171e1668a5f
+  OCI version annotation: 7.4.11
+  source: docker buildx imagetools inspect redis:7.4.11
+
+Apache AGE
+  git commit: 2db2f060c4c9265a14d40f007eb8c56febf31e4c
+  GitHub tag object PG16/v1.6.0-rc0 (type=commit)
+  source: https://api.github.com/repos/apache/age/git/refs/tags/PG16/v1.6.0-rc0
+  running extversion after build: 1.6.0
+
+pgvector
+  git commit: 8ee86c96f0fd72390f890aa8a336fda6d3ab4c6c
+  GitHub tag object v0.8.6 (type=commit)
+  source: https://api.github.com/repos/pgvector/pgvector/git/refs/tags/v0.8.6
+  running extversion after build: 0.8.6
+
+GitHub Actions
+  actions/checkout v7.0.1 -> 3d3c42e5aac5ba805825da76410c181273ba90b1
+    source: git ls-remote https://github.com/actions/checkout.git refs/tags/v7.0.1
+  astral-sh/setup-uv v10.0.1 -> 20cfd1bf945f4377ade1205e4dbc17946fc9a30d
+    source: git ls-remote https://github.com/astral-sh/setup-uv.git refs/tags/v10.0.1
+
+gitleaks
+  version: 8.30.1
+  linux_x64 tarball sha256: 551f6fc83ea457d62a0d98237cbad105af8d557003051f41f3e7ca7b3f2470eb
+    source: https://github.com/gitleaks/gitleaks/releases/download/v8.30.1/gitleaks_8.30.1_checksums.txt
+  extracted binary sha256: 88f91962aa2f93ac6ab281d553b9e125f5197bbbce38f9f2437f7299c32e5509
+    source: sha256sum of extracted gitleaks binary from that tarball

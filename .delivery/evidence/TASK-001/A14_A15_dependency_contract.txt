@@ -1,0 +1,5 @@
+=== uv lock --check ===
+Resolved 34 packages in 10ms
+=== A15 dependency contract ===
+.....                                                                    [100%]
+5 passed in 0.01s

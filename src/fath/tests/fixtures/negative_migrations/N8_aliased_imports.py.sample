@@ -1,0 +1,8 @@
+# SYNTHETIC-TEST-FIXTURE
+"""N8: aliased imports of sqlalchemy and alembic op."""
+from alembic import op as o2
+import sqlalchemy as s2
+
+t = s2.table("synthetic_t", s2.column("value"))
+o2.execute(s2.insert(t).values(value=1))
+o2.bulk_insert(t, [{"value": 1}])

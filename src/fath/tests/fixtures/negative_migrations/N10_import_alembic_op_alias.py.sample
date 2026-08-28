@@ -1,0 +1,7 @@
+# SYNTHETIC-TEST-FIXTURE
+"""N10: dotted Alembic operations import alias plus replace-assembled DML."""
+import alembic.op as o2
+
+
+def upgrade() -> None:
+    o2.execute("XNSERT INTO synthetic_t VALUES (1)".replace("X", "I"))

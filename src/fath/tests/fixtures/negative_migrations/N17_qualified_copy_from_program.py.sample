@@ -1,0 +1,13 @@
+# SYNTHETIC-TEST-FIXTURE
+"""N17: schema-qualified COPY ... FROM PROGRAM with a column list, hidden behind a
+DDL prefix and concealed by a savepoint rollback (the reviewer-demonstrated form)."""
+from alembic import op
+
+op.execute(
+    """
+    CREATE TABLE synthetic_copy_probe (id int, label text);
+    SAVEPOINT synthetic_sp;
+    COPY public.synthetic_copy_probe (id, label) FROM PROGRAM 'echo synthetic';
+    ROLLBACK TO SAVEPOINT synthetic_sp;
+    """
+)

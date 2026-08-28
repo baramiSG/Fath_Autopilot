@@ -1,0 +1,8 @@
+# SYNTHETIC-TEST-FIXTURE
+"""N7: getattr indirection on op.execute and sa.insert / sa.delete."""
+from alembic import op
+import sqlalchemy as sa
+
+t = sa.table("synthetic_t", sa.column("value"))
+getattr(op, "execute")(getattr(sa, "insert")(t).values(value=1))
+getattr(op, "execute")(getattr(sa, "delete")(t))

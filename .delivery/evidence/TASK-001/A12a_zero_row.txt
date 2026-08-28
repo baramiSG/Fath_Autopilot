@@ -1,0 +1,7 @@
+# A12a
+A12a source_registry_count 0
+tables ['alembic_version', 'source_registry']
+exts ['age', 'plpgsql', 'uuid-ossp', 'vector']
+version 160015
+redis_version 7.4.11
+postgres_server_version_num 160015

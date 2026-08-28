@@ -1,0 +1,7 @@
+# SYNTHETIC-TEST-FIXTURE
+"""N5: table.insert() passed to op.execute."""
+from alembic import op
+import sqlalchemy as sa
+
+t = sa.table("synthetic_t", sa.column("value"))
+op.execute(t.insert().values(value=1))

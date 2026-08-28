@@ -1,0 +1,8 @@
+# SYNTHETIC-TEST-FIXTURE
+"""N1: sa.insert / sa.delete via op.execute (reviewer-cited form)."""
+from alembic import op
+import sqlalchemy as sa
+
+t = sa.table("synthetic_t", sa.column("value"))
+op.execute(sa.insert(t).values(value=1))
+op.execute(sa.delete(t))

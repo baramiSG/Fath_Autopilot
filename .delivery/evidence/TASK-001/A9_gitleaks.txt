@@ -1,0 +1,7 @@
+gitleaks version: 8.30.1
+tarball sha256: 551f6fc83ea457d62a0d98237cbad105af8d557003051f41f3e7ca7b3f2470eb
+binary sha256: 88f91962aa2f93ac6ab281d553b9e125f5197bbbce38f9f2437f7299c32e5509
+8.30.1
+=== detect --no-git (working tree files) ===
+7:35AM INF scanned ~1508686 bytes (1.51 MB) in 139ms
+7:35AM INF no leaks found
