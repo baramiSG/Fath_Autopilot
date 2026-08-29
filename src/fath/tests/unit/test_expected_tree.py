@@ -121,12 +121,13 @@ def test_expected_tree_conformance() -> None:
             if first != "__init__.py" and first not in modules:
                 raise AssertionError(f"noncanonical module path: {path}")
 
-    version_py = [
+    version_py = sorted(
         p
         for p in domain
         if p.startswith("src/fath/db/migrations/versions/")
         and p.endswith(".py")
         and not p.endswith("__init__.py")
-    ]
-    assert len(version_py) == 1, version_py
+    )
+    assert len(version_py) == 2, version_py
     assert posix_path_match(version_py[0], "src/fath/db/migrations/versions/0001_*.py")
+    assert posix_path_match(version_py[1], "src/fath/db/migrations/versions/0002_*.py")

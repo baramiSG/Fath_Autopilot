@@ -1,0 +1,13 @@
+Python 3.11.15 via uv-managed project venv
+command: uv run pytest -v → 145 passed in 1.14s (exit 0)
+command: uv run ruff check src scripts → All checks passed (exit 0)
+command: uv run ruff format --check src scripts → 49 files already formatted (exit 0)
+command: uv run mypy src/ scripts/ → Success: no issues found in 49 source files (exit 0)
+command: uv run alembic downgrade -1 && uv run alembic upgrade head && uv run alembic downgrade base && uv run alembic upgrade head → exit 0
+A12 after cycle: source_registry 0, audit_log 0
+CLI: uv run python scripts/verify_audit_chain.py --recent 10000 → ok rows_checked=0 (exit 0)
+proving subset: uv run pytest -k "hash or chain or window" → 33 passed, 112 deselected in 0.39s (exit 0)
+candidate sha256: audit_hash.py e0cf97b4a766852129552b359b1bc878023ec1a950f6b5e627bf16aeb26f4740; audit_repo.py 5aca7fdb818bfc7c2ede29a0a284309255bca80e8d9e07bf5522b4f8739ca60d; verify_audit_chain.py 0cad1fb16906b477b4783d312b1a8ddc48ebbdeedf4d29208f936c8d7fbd14b6 (unchanged thin wrapper)
+red-green (prior turn): naive genesis-only verify_recent_chain → test_windowed_recent_verification_healthy_then_in_window_tamper FAILED (assert False is True, test_audit_log.py:186); recent+1 seed without the non-negative guard → test_verify_recent_chain_rejects_negative_window FAILED (IndexError: list index out of range, audit_repo.py:98)
+red-green (this turn, FATH-IMPL-201 seed-anchor completion): the recent+1 seed was accepted on internal consistency alone, so a chain re-linked from a forged anchor verified clean at recent == K-1. RED integration: test_window_reaching_chain_head_rejects_rewritten_anchor FAILED (assert True is False, where True = ChainVerificationResult(ok=True, rows_checked=2, failure_reason=None).ok, test_audit_log.py:259). RED unit: test_chain_head_predecessor_still_requires_genesis, test_genuine_chain_head_predecessor_passes_genesis_check, test_mid_chain_predecessor_does_not_require_genesis all FAILED (TypeError: verify_windowed_chain() got an unexpected keyword argument 'predecessor_is_chain_head'). After adding predecessor_is_chain_head to the library verifier and deriving it in audit_repo from SELECT 1 FROM audit_log WHERE sequence_no < :sequence_no LIMIT 1 → 145 passed
+boundary sweep (live DB, rollback-only): genesis-rooted chains K in {1,2,3,5,8} × recent 0..K+2 → ok at every window with rows_checked == min(K, recent); same chains re-linked from 'f'*64 → FAIL at every window reaching the chain head, ok only where the window cannot see the head (bounded-window limit); leftover audit_log rows after rollback: 0

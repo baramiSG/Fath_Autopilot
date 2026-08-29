@@ -1,0 +1,10 @@
+ok rows_checked=0
+command: uv run python scripts/verify_audit_chain.py --recent 10000
+exit_code: 0
+note: the empty-table smoke keeps the documented ok rows_checked=0 contract. It
+cannot exercise the windowed seed path, because that needs committed rows and
+IO-9 keeps audit_log at zero rows. The windowed path is proven instead by the
+rollback-only integration tests over verify_recent_chain, the same function this
+CLI wraps: test_windowed_recent_verification_healthy_then_in_window_tamper,
+test_window_reaching_chain_head_rejects_rewritten_anchor, and
+test_windowed_verification_detects_tampered_seed_outside_window.

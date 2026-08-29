@@ -55,14 +55,14 @@ jobs:
 
       - name: "3. ruff check + format --check; mypy src/"
         run: |
-          uv run ruff check src
-          uv run ruff format --check src
-          uv run mypy src/
+          uv run ruff check src scripts
+          uv run ruff format --check src scripts
+          uv run mypy src/ scripts/
 
       - name: "4. A16 diff-boundary against governed BASE_SHA"
         run: |
           set -euo pipefail
-          BASE=$(tr -d '[:space:]' < .delivery/evidence/TASK-001/BASE_SHA.txt)
+          BASE=$(tr -d '[:space:]' < .delivery/evidence/TASK-002/BASE_SHA.txt)
           echo "$BASE" | grep -Eq '^[0-9a-f]{40}$'
           git merge-base --is-ancestor "$BASE" HEAD
           fail=0
@@ -76,7 +76,7 @@ jobs:
             esac
             case "$path" in
               .delivery|.delivery/*)
-                if [ "$status" != "A" ] || [[ ! "$path" =~ ^\.delivery/evidence/TASK-001/ ]]; then
+                if [ "$status" != "A" ] || [[ ! "$path" =~ ^\.delivery/evidence/TASK-002/ ]]; then
                   echo "A16 FAIL .delivery path: $status $path"
                   fail=1
                 fi
@@ -119,6 +119,9 @@ jobs:
               n = conn.execute("SELECT COUNT(*) FROM source_registry").fetchone()[0]
               assert n == 0, n
               print("A12a source_registry_count", n)
+              a = conn.execute("SELECT COUNT(*) FROM audit_log").fetchone()[0]
+              assert a == 0, a
+              print("A12a audit_log_count", a)
           PY
 
       - name: "7. A4 expected-schema comparison and A11 functional extension checks"
@@ -137,6 +140,9 @@ jobs:
               n = conn.execute("SELECT COUNT(*) FROM source_registry").fetchone()[0]
               assert n == 0, n
               print("A12b source_registry_count", n)
+              a = conn.execute("SELECT COUNT(*) FROM audit_log").fetchone()[0]
+              assert a == 0, a
+              print("A12b audit_log_count", a)
           PY
 
       - name: "9. alembic downgrade/upgrade cycle and A12c zero-row check"
@@ -152,6 +158,9 @@ jobs:
               n = conn.execute("SELECT COUNT(*) FROM source_registry").fetchone()[0]
               assert n == 0, n
               print("A12c source_registry_count", n)
+              a = conn.execute("SELECT COUNT(*) FROM audit_log").fetchone()[0]
+              assert a == 0, a
+              print("A12c audit_log_count", a)
           PY
 
       - name: "10. A5 tree, A13 scans, explicit migration DML detector"
