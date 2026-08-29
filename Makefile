@@ -4,8 +4,8 @@ test:
 	uv run pytest
 
 lint:
-	uv run ruff check src
-	uv run ruff format --check src
+	uv run ruff check src scripts
+	uv run ruff format --check src scripts
 
 typecheck:
-	uv run mypy src/
+	uv run mypy src/ scripts/

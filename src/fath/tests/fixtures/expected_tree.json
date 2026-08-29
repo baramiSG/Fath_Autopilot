@@ -31,8 +31,13 @@
     "src/fath/config/settings.py",
     "src/fath/db/connection.py",
     "src/fath/db/models/source_registry.py",
+    "src/fath/db/models/audit_log.py",
+    "src/fath/db/audit_hash.py",
+    "src/fath/db/audit_repo.py",
     "src/fath/db/migrations/env.py",
     "src/fath/db/migrations/versions/0001_*.py",
+    "src/fath/db/migrations/versions/0002_*.py",
+    "scripts/verify_audit_chain.py",
     "src/fath/tests/fixtures/expected_schema.json",
     "src/fath/tests/fixtures/expected_tree.json"
   ],

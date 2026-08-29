@@ -286,6 +286,95 @@ def test_a4_expected_schema(conn: Any) -> None:
     assert tgtype & 16  # UPDATE
     assert tgtype & 1  # ROW
 
+    audit_columns = list(
+        conn.execute(
+            """
+            SELECT a.attname,
+                   pg_catalog.format_type(a.atttypid, a.atttypmod),
+                   a.attnotnull,
+                   pg_get_expr(ad.adbin, ad.adrelid)
+            FROM pg_attribute a
+            LEFT JOIN pg_attrdef ad ON ad.adrelid = a.attrelid AND ad.adnum = a.attnum
+            WHERE a.attrelid = 'public.audit_log'::regclass
+              AND a.attnum > 0 AND NOT a.attisdropped
+            ORDER BY a.attnum
+            """
+        )
+    )
+    audit_live = [
+        {
+            "name": name,
+            "type": _norm_type(fmt),
+            "not_null": notnull,
+            "default": None if default is None else _norm_ws(default),
+        }
+        for name, fmt, notnull, default in audit_columns
+    ]
+    assert audit_live == expected["audit_log_columns"]
+
+    audit_constraints = list(
+        conn.execute(
+            """
+            SELECT conname, contype, pg_get_constraintdef(oid), conkey
+            FROM pg_constraint
+            WHERE conrelid = 'public.audit_log'::regclass
+            ORDER BY conname
+            """
+        )
+    )
+    assert {row[0] for row in audit_constraints} == {
+        c["name"] for c in expected["audit_log_constraints"]
+    }
+    audit_attnames = {
+        row[0]: row[1]
+        for row in conn.execute(
+            """
+            SELECT attnum, attname FROM pg_attribute
+            WHERE attrelid = 'public.audit_log'::regclass AND attnum > 0
+            """
+        )
+    }
+    audit_expected_by_name = {c["name"]: c for c in expected["audit_log_constraints"]}
+    for name, contype, definition, conkey in audit_constraints:
+        exp = audit_expected_by_name[name]
+        cols = [audit_attnames[int(n)] for n in conkey]
+        assert_constraint_semantics(exp, contype, definition, cols)
+
+    audit_indexdefs = [
+        _norm_ws(row[0])
+        for row in conn.execute(
+            """
+            SELECT pg_get_indexdef(i.indexrelid)
+            FROM pg_index i
+            WHERE i.indrelid = 'public.audit_log'::regclass
+            ORDER BY pg_get_indexdef(i.indexrelid)
+            """
+        )
+    ]
+    expected_audit_indexes = sorted(_norm_ws(s) for s in expected["audit_log_indexes"])
+    assert audit_indexdefs == expected_audit_indexes
+
+    audit_triggers = list(
+        conn.execute(
+            """
+            SELECT t.tgname, p.proname, t.tgtype, t.tgenabled
+            FROM pg_trigger t
+            JOIN pg_proc p ON p.oid = t.tgfoid
+            WHERE t.tgrelid = 'public.audit_log'::regclass AND NOT t.tgisinternal
+            """
+        )
+    )
+    assert len(audit_triggers) == 1
+    audit_name, audit_function, audit_tgtype, audit_enabled = audit_triggers[0]
+    assert audit_name == expected["audit_log_trigger"]["name"]
+    assert audit_function == expected["audit_log_trigger"]["function"]
+    assert audit_enabled != "D"
+    assert audit_tgtype & 2  # BEFORE
+    assert audit_tgtype & 16  # UPDATE
+    assert audit_tgtype & 8  # DELETE
+    assert audit_tgtype & 1  # ROW
+    assert not (audit_tgtype & 32)  # not TRUNCATE
+
     exts = {row[0] for row in conn.execute("SELECT extname FROM pg_extension")}
     assert set(expected["extensions"]) <= exts
 
@@ -395,6 +484,8 @@ def test_source_id_update_raises_trigger(conn: Any) -> None:
 def test_zero_rows_after_negative_tests(conn: Any) -> None:
     count = conn.execute("SELECT COUNT(*) FROM public.source_registry").fetchone()
     assert count is not None and count[0] == 0
+    audit_count = conn.execute("SELECT COUNT(*) FROM public.audit_log").fetchone()
+    assert audit_count is not None and audit_count[0] == 0
 
 
 NUMERIC_REQUESTS_EXPECTED: dict[str, Any] = {

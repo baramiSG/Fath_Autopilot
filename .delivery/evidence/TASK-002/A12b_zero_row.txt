@@ -1,0 +1,4 @@
+A12b source_registry_count 0
+A12b audit_log_count 0
+command: uv run python A12 COUNT after pytest + alembic at head + CLI
+exit_code: 0

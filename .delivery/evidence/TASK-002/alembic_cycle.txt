@@ -1,0 +1,10 @@
+INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
+INFO  [alembic.runtime.migration] Will assume transactional DDL.
+INFO  [alembic.runtime.migration] Running downgrade 0002 -> 0001, Migration 0002 — audit_log schema (DDL only, zero DML).
+INFO  [alembic.runtime.migration] Running upgrade 0001 -> 0002, Migration 0002 — audit_log schema (DDL only, zero DML).
+INFO  [alembic.runtime.migration] Running downgrade 0002 -> 0001, Migration 0002 — audit_log schema (DDL only, zero DML).
+INFO  [alembic.runtime.migration] Running downgrade 0001 -> , Migration 0001 — source_registry schema (DDL only, zero DML).
+INFO  [alembic.runtime.migration] Running upgrade  -> 0001, Migration 0001 — source_registry schema (DDL only, zero DML).
+INFO  [alembic.runtime.migration] Running upgrade 0001 -> 0002, Migration 0002 — audit_log schema (DDL only, zero DML).
+A12 after cycle: source_registry 0, audit_log 0
+exit_code: 0

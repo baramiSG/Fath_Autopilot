@@ -1,5 +1,5 @@
 {
-  "table_set": ["alembic_version", "source_registry"],
+  "table_set": ["alembic_version", "audit_log", "source_registry"],
   "extensions": ["uuid-ossp", "vector", "age"],
   "fk_count_public": 0,
   "columns": [
@@ -146,6 +146,72 @@
     "function": "fath_source_id_immutable",
     "timing": "BEFORE",
     "event": "UPDATE",
+    "level": "ROW",
+    "enabled": true
+  },
+  "audit_log_columns": [
+    {"name": "audit_id", "type": "uuid", "not_null": true, "default": null},
+    {"name": "sequence_no", "type": "bigint", "not_null": true, "default": "nextval('audit_log_sequence_no_seq'::regclass)"},
+    {"name": "occurred_at", "type": "timestamptz", "not_null": true, "default": null},
+    {"name": "actor_type", "type": "text", "not_null": true, "default": null},
+    {"name": "actor_id", "type": "text", "not_null": true, "default": null},
+    {"name": "action_type", "type": "text", "not_null": true, "default": null},
+    {"name": "target_object_type", "type": "text", "not_null": true, "default": null},
+    {"name": "target_object_id", "type": "uuid", "not_null": false, "default": null},
+    {"name": "run_id", "type": "uuid", "not_null": false, "default": null},
+    {"name": "event_id", "type": "uuid", "not_null": false, "default": null},
+    {"name": "payload_hash_sha256", "type": "text", "not_null": true, "default": null},
+    {"name": "payload_canonical_json", "type": "jsonb", "not_null": true, "default": null},
+    {"name": "previous_row_hash_sha256", "type": "text", "not_null": true, "default": null},
+    {"name": "row_hash_sha256", "type": "text", "not_null": true, "default": null}
+  ],
+  "audit_log_constraints": [
+    {"name": "audit_log_pkey", "contype": "p", "columns": ["audit_id"]},
+    {"name": "audit_log_row_hash_sha256_key", "contype": "u", "columns": ["row_hash_sha256"]},
+    {"name": "audit_log_sequence_no_key", "contype": "u", "columns": ["sequence_no"]},
+    {
+      "name": "ck_audit_log_action_type",
+      "contype": "c",
+      "columns": ["action_type"],
+      "values": [
+        "source_accessed",
+        "raw_archived",
+        "content_sanitized",
+        "fact_extracted",
+        "fact_validated",
+        "graph_updated",
+        "hypothesis_created",
+        "insight_promoted",
+        "belief_created",
+        "belief_calibrated",
+        "approval_requested",
+        "approval_decided",
+        "budget_breached",
+        "source_quarantined",
+        "config_changed"
+      ]
+    },
+    {
+      "name": "ck_audit_log_actor_type",
+      "contype": "c",
+      "columns": ["actor_type"],
+      "values": ["agent", "user", "system"]
+    }
+  ],
+  "audit_log_indexes": [
+    "CREATE INDEX idx_audit_action ON public.audit_log USING btree (action_type)",
+    "CREATE INDEX idx_audit_run ON public.audit_log USING btree (run_id)",
+    "CREATE INDEX idx_audit_target ON public.audit_log USING btree (target_object_type, target_object_id)",
+    "CREATE INDEX idx_audit_time ON public.audit_log USING btree (occurred_at DESC)",
+    "CREATE UNIQUE INDEX audit_log_pkey ON public.audit_log USING btree (audit_id)",
+    "CREATE UNIQUE INDEX audit_log_row_hash_sha256_key ON public.audit_log USING btree (row_hash_sha256)",
+    "CREATE UNIQUE INDEX audit_log_sequence_no_key ON public.audit_log USING btree (sequence_no)"
+  ],
+  "audit_log_trigger": {
+    "name": "trg_audit_log_append_only",
+    "function": "fath_audit_log_append_only",
+    "timing": "BEFORE",
+    "event": "UPDATE_OR_DELETE",
     "level": "ROW",
     "enabled": true
   }

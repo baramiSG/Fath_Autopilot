@@ -7,7 +7,7 @@ import subprocess
 
 from fath.tests.conftest import REPO_ROOT, candidate_paths
 
-BASE_PATH = REPO_ROOT / ".delivery" / "evidence" / "TASK-001" / "BASE_SHA.txt"
+BASE_PATH = REPO_ROOT / ".delivery" / "evidence" / "TASK-002" / "BASE_SHA.txt"
 
 
 def test_base_sha_file_matches_governed_identity() -> None:
@@ -15,7 +15,7 @@ def test_base_sha_file_matches_governed_identity() -> None:
     lines = text.splitlines()
     assert len(lines) == 1
     assert re.fullmatch(r"[0-9a-f]{40}", lines[0])
-    assert lines[0] == "2649fb91b73c1d352bcd59a96cc9bf2e3dee27a9"
+    assert lines[0] == "91311f35410344f8f3e8b9c90cef2dcd1ab7741e"
 
 
 def test_a16_working_tree_boundary() -> None:
@@ -44,6 +44,6 @@ def test_a16_working_tree_boundary() -> None:
         if path == "docs" or path.startswith("docs/"):
             failures.append(f"{status} {path}")
         if path == ".delivery" or path.startswith(".delivery/"):
-            if status != "A" or not path.startswith(".delivery/evidence/TASK-001/"):
+            if status != "A" or not path.startswith(".delivery/evidence/TASK-002/"):
                 failures.append(f"{status} {path}")
     assert failures == []

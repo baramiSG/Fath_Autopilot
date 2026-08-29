@@ -94,6 +94,7 @@ def test_a13b_i_no_registry_writes_outside_migrations_and_tests() -> None:
 def test_a13c_import_discipline() -> None:
     allowed_db_prefixes = (
         "src/fath/db/connection.py",
+        "src/fath/db/audit_repo.py",
         "src/fath/db/migrations/",
         "src/fath/tests/",
     )
@@ -123,23 +124,27 @@ def test_a13c_import_discipline() -> None:
                 hits.append(f"{rel}: non-empty init")
     assert hits == []
 
-    model = REPO_ROOT / "src/fath/db/models/source_registry.py"
-    tree = ast.parse(model.read_text(encoding="utf-8"))
-    for node in ast.walk(tree):
-        names: list[str] = []
-        if isinstance(node, ast.Import):
-            names.extend(alias.name.split(".")[0] for alias in node.names)
-        elif isinstance(node, ast.ImportFrom) and node.module:
-            names.append(node.module.split(".")[0])
-        for name in names:
-            assert name in {
-                "__future__",
-                "datetime",
-                "enum",
-                "typing",
-                "uuid",
-                "pydantic",
-            }, name
+    allowed_model_imports = {
+        "__future__",
+        "datetime",
+        "enum",
+        "typing",
+        "uuid",
+        "pydantic",
+    }
+    for model in (
+        REPO_ROOT / "src/fath/db/models/source_registry.py",
+        REPO_ROOT / "src/fath/db/models/audit_log.py",
+    ):
+        tree = ast.parse(model.read_text(encoding="utf-8"))
+        for node in ast.walk(tree):
+            names: list[str] = []
+            if isinstance(node, ast.Import):
+                names.extend(alias.name.split(".")[0] for alias in node.names)
+            elif isinstance(node, ast.ImportFrom) and node.module:
+                names.append(node.module.split(".")[0])
+            for name in names:
+                assert name in allowed_model_imports, (str(model), name)
 
 
 def test_a13d_fixture_syntheticity() -> None:
